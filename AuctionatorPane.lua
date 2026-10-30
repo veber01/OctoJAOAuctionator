@@ -12,7 +12,7 @@ function AtrPane.create ()
 
 	pane.fullStackSize	= 0;
 
-	pane.totalItems		= 0;		-- total in bags for this item
+	pane.totalItems		= 0;
 
 	pane.UINeedsUpdate	= false;
 	pane.showWhich		= ATR_SHOW_CURRENT;
@@ -28,7 +28,6 @@ function AtrPane.create ()
 	return pane;
 end
 
-
 -----------------------------------------
 
 function AtrPane:DoSearch (searchText, exact, rescanThreshold, callback)
@@ -41,16 +40,15 @@ function AtrPane:DoSearch (searchText, exact, rescanThreshold, callback)
 	self.sortedHist			= nil;
 	self.hints				= nil;
 	
-	self.SS_hilite_itemName	= searchText;		-- by name for search summary
+	self.SS_hilite_itemName	= searchText;
 	
 	Atr_ClearBuyState();
 
 	self.activeScan = Atr_FindScan (nil);
 	
-	Atr_ClearAll();		-- it's fast, might as well just do it now for cleaner UE
+	Atr_ClearAll();
 	
-	self.UINeedsUpdate = false;		-- will be set when scan finishes
-			
+	self.UINeedsUpdate = false;	
 	self.activeSearch = Atr_NewSearch (searchText, exact, rescanThreshold, callback);
 	
 	if (exact) then
@@ -60,7 +58,7 @@ function AtrPane:DoSearch (searchText, exact, rescanThreshold, callback)
 	local cacheHit = false;
 	
 	if (searchText ~= "") then
-		if (self.activeScan.whenScanned == 0) then		-- check whenScanned so we don't rescan cache hits
+		if (self.activeScan.whenScanned == 0) then
 			self.activeSearch:Start();
 		else
 			self.UINeedsUpdate = true;
@@ -143,5 +141,3 @@ function AtrPane:SetToShowHints ()
 	self.showWhich = ATR_SHOW_HINTS;
 	
 end
-
-

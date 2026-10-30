@@ -1,7 +1,5 @@
-
 local addonName, addonTable = "Auctionator", AtrNS; 
 local zc = addonTable.zc;
-
 
 local ATR_BUY_NULL						= 0;
 local ATR_BUY_QUERY_SENT				= 1;
@@ -41,7 +39,6 @@ function Atr_Buy_Debug1 (yellow)
 			zc.msg_pink (asstr, "curpage: ", gAtr_Buy_CurPage, "   gAtr_Buy_NumBought: ", gAtr_Buy_NumBought);
 		end
 	end
-	
 end
 
 -----------------------------------------
@@ -67,7 +64,6 @@ function Atr_ClearBuyState()
 
 end
 
-
 -----------------------------------------
 
 function Atr_Buy1_Onclick ()
@@ -78,10 +74,9 @@ function Atr_Buy1_Onclick ()
 
 	local searchPane = Atr_GetCurrentPane();
 	if (searchPane.activeSearch and searchPane.activeSearch:IsActive()) then
-		searchPane.activeSearch:Pause();		-- resumes when the purchase is over
+		searchPane.activeSearch:Pause();
 	end
 
-	
 	gAtr_Buy_Query			= Atr_NewQuery();
 	gAtr_Buy_NumUserWants	= -1;
 	gAtr_Buy_NumBought		= 0;
@@ -114,8 +109,6 @@ function Atr_Buy1_Onclick ()
 	else
 		Atr_Buy_QueueQuery(0);
 	end
-
-
 end
 
 -----------------------------------------
@@ -123,13 +116,10 @@ end
 function Atr_Buy_QueueQuery (page)
 
 	gAtr_Buy_CurPage = page;
-
---zc.msg_pink ("Queuing query for page ", page);
-
 	gBuyState = ATR_BUY_WAITING_FOR_AH_CAN_SEND;
 	gAtr_Buy_Waiting_Start = time();
 	
-	Atr_Buy_SendQuery();		-- give it a shot
+	Atr_Buy_SendQuery();
 end
 
 -----------------------------------------
@@ -140,29 +130,23 @@ function Atr_Buy_SendQuery ()
 
 		gBuyState = ATR_BUY_QUERY_SENT;
 
-		local queryString = zc.UTF8_Truncate (gAtr_Buy_ItemName,63);	-- attempting to reduce number of disconnects
+		local queryString = zc.UTF8_Truncate (gAtr_Buy_ItemName,63);
 
 		Atr_QueryAuctionItems (queryString, "", "", nil, 0, 0, gAtr_Buy_CurPage, nil, nil);
 	end
-		
 end
 
 -----------------------------------------
 local prevBuyState;
 
------------------------------------------
-
 function Atr_Buy_Idle ()
 
 	if (gBuyState ~= prevBuyState) then
 		prevBuyState = gBuyState;
---		Atr_Buy_Debug1 (true);
 	end
 	
 	if (gBuyState == ATR_BUY_WAITING_FOR_AH_CAN_SEND) then
-	
---		zc.md ("WAITING_FOR_AH_CAN_SEND: ", time() - gAtr_Buy_Waiting_Start);
-		
+
 		if (GetMoney() < gAtr_Buy_BuyoutPrice) then
 			Atr_Buy_Cancel (ZT("You do not have enough gold\n\nto make any more purchases."));
 		elseif (time() - gAtr_Buy_Waiting_Start > 10) then
@@ -173,21 +157,16 @@ function Atr_Buy_Idle ()
 		
 	elseif (gBuyState == ATR_BUY_JUST_BOUGHT) then
 
---		zc.msg_pink ("ATR_BUY_JUST_BOUGHT: ",  time() - gAtr_Buy_Waiting_Start);
-
-		local queueIf = (time() - gAtr_Buy_Waiting_Start > 2);		-- wait a few seconds for Auction List to Update after buys
+		local queueIf = (time() - gAtr_Buy_Waiting_Start > 2);
 		
 		Atr_Buy_NextPage_Or_Cancel (queueIf);
 		
 	end
-
 end
 
 -----------------------------------------
 
 function Atr_Buy_OnAuctionUpdate()
-
---	Atr_Buy_Debug1();
 
 	if (gBuyState == ATR_BUY_QUERY_SENT) then
 		Atr_Buy_CheckForMatches ();
@@ -225,9 +204,7 @@ function Atr_Buy_CheckForMatches ()
 	else
 		Atr_Buy_NextPage_Or_Cancel();
 	end
-
 end
-
 
 -----------------------------------------
 
@@ -269,9 +246,6 @@ function Atr_Buy_CountMatches (andBuy)
 	return numMatches, numBoughtThisPage;
 end
 
-
-
-
 -----------------------------------------
 
 function Atr_Buy_Confirm_Update ()
@@ -285,7 +259,6 @@ function Atr_Buy_Confirm_Update ()
 	end
 
 	MoneyFrame_Update ("Atr_Buy_Confirm_TotalPrice",  gAtr_Buy_BuyoutPrice * num);
-
 end
 
 -----------------------------------------
@@ -320,7 +293,6 @@ function Atr_Buy_IsComplete ()
 	end
 
 	return false;
-
 end
 
 -----------------------------------------
@@ -332,7 +304,6 @@ function Atr_Buy_IsFirstPassComplete ()
 	end
 
 	return false;
-
 end
 
 -----------------------------------------
@@ -355,8 +326,6 @@ function Atr_Buy_Confirm_OK ()
 
 	if (numJustBought > 0) then
 
---zc.msg (numJustBought, " from page ", gAtr_Buy_CurPage);
-	
 		AuctionatorSubtractFromScan (gAtr_Buy_ItemName, gAtr_Buy_StackSize, gAtr_Buy_BuyoutPrice, gAtr_Buy_NumBought);
 		gBuyState = ATR_BUY_JUST_BOUGHT;
 		gAtr_Buy_Waiting_Start = time();
@@ -364,7 +333,6 @@ function Atr_Buy_Confirm_OK ()
 	else
 		Atr_Buy_NextPage_Or_Cancel();
 	end
-	
 end
 
 -----------------------------------------
@@ -385,5 +353,3 @@ function Atr_Buy_Cancel (msg)
 	
 	Atr_Error_Display(msg);
 end
-
-

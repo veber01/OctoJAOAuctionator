@@ -1,9 +1,3 @@
--- Skin.lua: pfUI look for OctoAuctionator
--- Does nothing when pfUI is not installed/enabled.
--- strips the Blizzard art from every Auctionator frame and gives it the pfUI backdrop,
--- buttons,boxes, dropdowns, inputs, checkboxes, scrollbars and tabs with pfUIs own helpers
--- so it follows pfUI border / colour / font settings
-
 local G = getfenv(0)
 
 local done          = false
@@ -254,7 +248,16 @@ local function SkinListTabs()
 		Atr_ListTabs:ClearAllPoints()
 		Atr_ListTabs:SetPoint("BOTTOMRIGHT", Atr_HeadingsBar, "TOPRIGHT", 0, -19)
 	end
-	PanelTemplates_SetTab(Atr_ListTabs, Atr_ListTabs.selectedTab or 1)
+	if Atr_ListTabs and AuctionFrame then
+        Atr_ListTabs:SetParent(AuctionFrame)
+        Atr_ListTabs:SetFrameStrata(AuctionFrame:GetFrameStrata())
+        Atr_ListTabs:SetFrameLevel(AuctionFrame:GetFrameLevel() + 40)
+        for i = 1, 3 do
+            local tab = Get("Atr_ListTabsTab" .. i)
+            if tab then tab:SetFrameLevel(Atr_ListTabs:GetFrameLevel() + 1) end
+        end
+    end
+    if Atr_UpdateListTabsSelection then Atr_UpdateListTabsSelection(Atr_ListTabs.selectedTab or 1) end
 end
 
 -----------------------------------------

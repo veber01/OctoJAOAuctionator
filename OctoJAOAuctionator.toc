@@ -8,6 +8,7 @@
 ## SavedVariables: AUCTIONATOR_SAVEDVARS, AUCTIONATOR_PRICING_HISTORY, AUCTIONATOR_SHOPPING_LISTS, AUCTIONATOR_PRICE_DATABASE, AUCTIONATOR_LAST_SCAN_TIME, AUCTIONATOR_TOONS, AUCTIONATOR_STACKING_PREFS, AUCTIONATOR_SCAN_MINLEVEL, AUCTIONATOR_LOCALE
 
 Compat.lua
+AuctionatorFonts.lua
 
 Locales\enUS.lua
 Locales\huHU.lua
@@ -16,10 +17,8 @@ zcUtils.lua
 
 Auctionator.lua
 AuctionatorShop.lua
+AuctionatorUI.lua
 
-Auctionator.xml
-
-AuctionatorLocalize.lua
 AuctionatorPane.lua
 AuctionatorScan.lua
 AuctionatorQuery.lua

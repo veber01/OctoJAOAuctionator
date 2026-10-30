@@ -1,7 +1,5 @@
-
 local addonName, addonTable = "Auctionator", AtrNS; 
 local zc = addonTable.zc;
-
 
 -----------------------------------------
 
@@ -21,7 +19,6 @@ end
 -----------------------------------------
 
 function Atr_Hook_OnTooltipAddMoney()
-	-- the 3.x port hid the stock vendor line here; the 1.12 tooltip has no such hook
 end
 
 ------------------------------------------------
@@ -50,20 +47,15 @@ function Atr_BuildHints (itemName)
 	if (itemLink == nil and itemName == nil) then
 		return results;
 	end
-
-	-- Auctionator Full Scan
 	
 	if (itemName ~= nil and gAtr_ScanDB[itemName] ~= nil) then
 		Atr_AppendHint (results, gAtr_ScanDB[itemName], ZT("Auctionator scan data"));
 	end
-
-	-- most recent historical price
 	
 	local price = Atr_GetMostRecentSale(itemName);
 	if (price ~= nil) then
 		Atr_AppendHint (results, price, ZT("your most recent posting"));
 	end
-
 
 	return results;
 
@@ -92,8 +84,8 @@ function Atr_ShowHints ()
 		Atr_Col3_Heading:Show();
 	end
 
-	local line;							-- 1 through 12 of our window to scroll
-	local dataOffset;					-- an index into our data calculated from the scroll offset
+	local line;
+	local dataOffset;
 
 	FauxScrollFrame_Update (AuctionatorScrollFrame, numrows, 12, 16);
 
@@ -142,7 +134,6 @@ function Atr_ShowHints ()
 	Atr_HighlightEntry (currentPane.hintsIndex);
 end
 
-
 -----------------------------------------
 
 function Atr_SetMFcolor (frameName, blue)
@@ -162,13 +153,11 @@ function Atr_SetMFcolor (frameName, blue)
 			fs:SetTextColor (r, g, b);
 		end
 	end
-
 end
-
 
 -----------------------------------------
 
-function Atr_GetAuctionPrice (item)  -- itemName or itemID
+function Atr_GetAuctionPrice (item)
 
 	local itemName;
 	
@@ -226,7 +215,6 @@ local function Atr_CalcTTpadding (price1, price2)
 	end
 
 	return padding;
-
 end
 
 -----------------------------------------
@@ -334,7 +322,6 @@ engDEnames [GREATER_COSMIC]		= "Greater Cosmic Essence";
 engDEnames [LESSER_COSMIC]		= "Lesser Cosmic Essence";
 engDEnames [ABYSS_CRYSTAL]		= "Abyss Crystal";
 
-
 local dustsAndEssences = {};
 
 tinsert (dustsAndEssences, LESSER_MAGIC)
@@ -384,13 +371,13 @@ tinsert (dustsAndEssences, GREATER_COSMIC)
 tinsert (dustsAndEssences, LESSER_COSMIC)
 tinsert (dustsAndEssences, ABYSS_CRYSTAL)
 
-gAtr_dustCacheIndex = 0;		-- the 3.x dust list is not cached on 1.12 (pulling unknown items can disconnect)
+gAtr_dustCacheIndex = 0;
 local dustCacheState = 0;
 
 -----------------------------------------
 
-function Atr_GetNextDustIntoCache()		-- make sure all the dusts and essences are in the local cache
-										-- only needed after a major patch and a cache wipe
+function Atr_GetNextDustIntoCache()	
+
 	if (gAtr_dustCacheIndex == 0) then
 		return;
 	end
@@ -407,12 +394,11 @@ function Atr_GetNextDustIntoCache()		-- make sure all the dusts and essences are
 	end
 
 	if (itemLink) then
-		--zc.md (itemName.." is already in local cache");
 		dustCacheState = 0;
 		gAtr_dustCacheIndex = gAtr_dustCacheIndex + 1;
 		
 		if (gAtr_dustCacheIndex > getn(dustsAndEssences)) then
-			gAtr_dustCacheIndex = 0;		-- finished
+			gAtr_dustCacheIndex = 0;
 		end
 	end
 end
@@ -434,12 +420,11 @@ local function Atr_GetDEitemName (itemID)
 	end
 	
 	return deItemNames[itemID];
-
 end
 
 -----------------------------------------
 
-function Atr_GetAuctionPriceDE (itemID)  -- same as Atr_GetAuctionPrice but understands that some "lesser" essences are convertible with "greater"
+function Atr_GetAuctionPriceDE (itemID)
 
 	local lesserPrice;
 	local greaterPrice;
@@ -503,13 +488,12 @@ local function DEtableInsert(t, info)
 	end
 	
 	table.insert (t, entry);
-
 end
 
 
 -----------------------------------------
 
-function Atr_InitDETable()		-- disenchant tables are for the 3.x item level system; vanilla items have no item level
+function Atr_InitDETable()
 
 end
 
@@ -532,8 +516,6 @@ local function Atr_FindDEentry (itemType, itemRarity, itemLevel)
 			end
 		end
 	end
-
-
 end
 
 -----------------------------------------
@@ -577,7 +559,6 @@ function Atr_DumpDETable (itemType, itemRarity)
 			end
 		end
 	end
-
 end
 
 -----------------------------------------
@@ -604,7 +585,7 @@ function Atr_CalcDisenchantPrice (itemType, itemRarity, itemLevel)
 		end
 	end
 	
-	return nil;		-- can't be disenchanted
+	return nil;
 end
 
 -----------------------------------------
@@ -617,22 +598,6 @@ local function ShowTipWithPricing (tip, link, num)
 	if (link == nil) then
 		return;
 	end
-
---[[
-	if (num == "tradeskill") then
-	
-		local skill = link;
-	
-		local n;
-		for n = 1,GetTradeSkillNumReagents(skill) do
-			local rname, _, rnum = GetTradeSkillReagentInfo(skill, n);
-			local rlink = GetTradeSkillReagentItemLink (skill, n);
-			zc.md (skill, rlink, rnum);
-		end
-	
-		return;
-	end
-]]--
 
 	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, _, _, _, _, itemVendorPrice = Atr_GetItemInfo (link);
 
@@ -665,14 +630,10 @@ local function ShowTipWithPricing (tip, link, num)
 		vendorPrice = 0;
 	end
 
-	-- vendor info
-
 	if (AUCTIONATOR_V_TIPS == 1 and vendorPrice > 0) then
 		local vpadding = Atr_CalcTTpadding (vendorPrice, auctionPrice);
 		Atr_TipAddMoneyLine (tip, ZT("Vendor")..xstring, vendorPrice)
 	end
-	
-	-- auction info
 
 	if (AUCTIONATOR_A_TIPS == 1) then
 		
@@ -690,8 +651,6 @@ local function ShowTipWithPricing (tip, link, num)
 			tip:AddDoubleLine (ZT("Auction")..xstring, "|cFFFFFFFF"..ZT("unknown").."  ");
 		end
 	end
-	
-	-- disenchanting info
 
 	if (AUCTIONATOR_D_TIPS == 1 and dePrice ~= nil) then
 		if (dePrice > 0) then
@@ -714,7 +673,6 @@ local function ShowTipWithPricing (tip, link, num)
 	end
 
 	tip:Show()
-
 end
 
 -----------------------------------------
@@ -724,10 +682,9 @@ local function Atr_SafeTipHook (tip, method, fn)
 	Atr_hooksecurefunc (tip, method, function (t, a, b, c, d)
 		local ok, err = pcall (fn, t, a, b, c, d);
 		if (not ok) then
-			Atr_ReportError ("tooltip "..method..": "..tostring(err));		-- never break the tooltip, but say why
+			Atr_ReportError ("tooltip "..method..": "..tostring(err));
 		end
 	end);
-
 end
 
 -----------------------------------------

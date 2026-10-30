@@ -1,15 +1,9 @@
--- Compat.lua: bridges the WoW 3.3 / Lua 5.1 constructs used by Auctionator 2.6.2 to the 1.12 client
--- (Lua 5.0, vanilla auction API).  Loaded first.  Everything here is prefixed Atr_ unless noted.
-
 AtrNS = AtrNS or {}
 
 local G = getfenv(0)
 
 ----------------------------------------------------------------------
--- small language helpers
-----------------------------------------------------------------------
 
--- strsplit(delim, str): pieces as multiple return values; delim is matched literally
 function Atr_strsplit(delim, str, pieces)
 	if str == nil then return nil end
 	local t, pos = {}, 1
@@ -25,9 +19,6 @@ function Atr_strsplit(delim, str, pieces)
 	return unpack(t)
 end
 
--- Atr_hooksecurefunc(table, "Method", fn) / Atr_hooksecurefunc("Global", fn): runs fn after the original.
--- Auctionator always uses its own copy: 1.12 has no hooksecurefunc, and addons loaded earlier define
--- incompatible globals (Atlas-CFM's only knows the ("Global", fn) form, so every tooltip hook was a no-op).
 function Atr_hooksecurefunc(a1, a2, a3)
 	local tbl, name, fn
 	if type(a1) == "string" then
@@ -44,12 +35,10 @@ function Atr_hooksecurefunc(a1, a2, a3)
 	end
 end
 
--- Lua errors coming from this addon are also echoed to the chat frame (once per message), so they show up
--- in screenshots even when the error popup is off.  The previous handler still runs.
+
 do
 	local seen = {}
 
-	-- errors caught by pcall (tooltip hooks) are reported here, once per message
 	function Atr_ReportError(msg)
 		msg = tostring(msg)
 		if seen[msg] then return end
@@ -78,10 +67,8 @@ function Atr_GetVersion()
 end
 
 ----------------------------------------------------------------------
--- item info (3.x layout: name, link, rarity, ilevel, minLevel, type, subType, stack, equipLoc, texture, sellPrice)
-----------------------------------------------------------------------
 
-local linkByName = {}   -- lower(name) -> item link, filled from everything we see
+local linkByName = {}
 
 function Atr_RememberItemLink(name, link)
 	if name and link then linkByName[string.lower(name)] = link end
@@ -119,10 +106,8 @@ function Atr_GetItemInfo(x)
 	if not a then return nil end
 	local name, link, rarity, ilevel, minLevel, itemType, subType, stack, equip, texture
 	if type(e) == "string" then
-		-- 1.12 layout: name, link, rarity, minLevel, type, subType, stack, equipLoc, texture
 		name, link, rarity, minLevel, itemType, subType, stack, equip, texture = a, b, c, d, e, f, g, h, i
 	else
-		-- 2.x+ layout (extended clients)
 		name, link, rarity, ilevel, minLevel, itemType, subType, stack, equip, texture = a, b, c, d, e, f, g, h, i, j
 	end
 	if link then Atr_RememberItemLink(name, link) end
@@ -134,8 +119,6 @@ function Atr_GetItemIcon(x)
 	return texture
 end
 
-----------------------------------------------------------------------
--- cursor / inventory
 ----------------------------------------------------------------------
 
 function Atr_CursorIsItem()
@@ -162,7 +145,6 @@ local function LinkId(link)
 	return id and tonumber(id) or nil
 end
 
--- link of the item currently sitting in the auction sell slot
 function Atr_SellSlotLink()
 	local name, texture, count, quality, canUse, price, maxStack, link = GetAuctionSellItemInfo()
 	if not name then return nil end
@@ -174,7 +156,6 @@ function Atr_SellSlotLink()
 	return l, name, count, maxStack, price
 end
 
--- total of an item (by name) in bags; a stack inside the auction slot is counted once
 function Atr_CountItemInBags(itemName)
 	local total, lockedCounts = 0, {}
 	local lname = itemName and string.lower(itemName)
@@ -199,10 +180,7 @@ function Atr_CountItemInBags(itemName)
 end
 
 ----------------------------------------------------------------------
--- auction house call adapters
-----------------------------------------------------------------------
 
--- 1.12 has no getAll; class/subclass/slot indexes of 0 mean "any" and must be nil
 function Atr_QueryAuctionItems(name, minLevel, maxLevel, invType, itemClass, itemSubclass, page, usable, quality)
 	if minLevel == "" then minLevel = nil end
 	if maxLevel == "" then maxLevel = nil end
@@ -219,12 +197,9 @@ function Atr_CanSendAuctionQuery()
 	return can, false
 end
 
--- durations: 1,2,3 as Auctionator uses them -> minutes understood by StartAuction on this server
 AtrNS.durationMinutes = { 120, 480, 1440 }
 AtrNS.durationText = { "6 hours", "24 hours", "72 hours" }
 
-----------------------------------------------------------------------
--- multi stack posting (the 3.3 client did this in StartAuction itself)
 ----------------------------------------------------------------------
 
 local post = nil
@@ -429,7 +404,6 @@ function Atr_PostingInProgress()
 	return post ~= nil
 end
 
--- startingBid / buyout are per stack; duration is 1,2,3
 function Atr_StartAuction(startingBid, buyout, duration, stackSize, numStacks)
 	if post then return end
 	local link, name, count = Atr_SellSlotLink()
@@ -457,10 +431,6 @@ function Atr_SubmitCurrentAuction(startingBid, buyout, minutes)
 end
 
 ----------------------------------------------------------------------
--- selected row in the lists.  The 3.x code locked the button in its PUSHED state; the list buttons have
--- no NormalTexture and the 1.12 client never hid the pushed texture again, so every clicked row stayed
--- yellow.  The rows now carry their own selection texture instead (the XML PushedTextures are removed).
-----------------------------------------------------------------------
 
 function Atr_SetRowSelected(row, on)
 	local sel = row.atrSel
@@ -481,9 +451,6 @@ function Atr_SetRowSelected(row, on)
 end
 
 ----------------------------------------------------------------------
--- Blizzard coins instead of g/s/c letters (1.12 text cannot hold inline textures, so prices use small
--- money frames: tooltips, the Stack Price column, the deposit line)
-----------------------------------------------------------------------
 
 local moneyFrames = 0
 
@@ -502,7 +469,6 @@ function Atr_SetMoney(frame, money)
 	MoneyFrame_Update(frame:GetName(), money or 0)
 end
 
--- tooltips: one pooled money frame per priced line, hidden whenever the tooltip is reused or hidden
 local function TipHideMoney(tip, resetWidth)
 	if tip.atrMoney then
 		for i = 1, getn(tip.atrMoney) do tip.atrMoney[i]:Hide() end
@@ -547,7 +513,7 @@ function Atr_TipAddMoneyLine(tip, label, money)
 	local left = getglobal(tname .. "TextLeft" .. n)
 	local right = getglobal(tname .. "TextRight" .. n)
 	if right then
-		mf:SetPoint("RIGHT", right, "RIGHT", 13, 0)		-- the coins sit 13px inside the frame's right edge
+		mf:SetPoint("RIGHT", right, "RIGHT", 13, 0)
 	elseif left then
 		mf:SetPoint("LEFT", left, "RIGHT", 8, 0)
 	end
@@ -559,7 +525,6 @@ function Atr_TipAddMoneyLine(tip, label, money)
 	end
 end
 
--- Stack Price column of the auction list rows
 function Atr_ShowRowStackMoney(row, money)
 	local mf = row.atrStackMoney
 	if not money then
@@ -568,14 +533,13 @@ function Atr_ShowRowStackMoney(row, money)
 	end
 	if not mf then
 		mf = Atr_CreateMoneyFrame(row, "STATIC")
-		mf:SetPoint("RIGHT", row, "LEFT", 573, 0)		-- right edge of the 120px column at x=440
+		mf:SetPoint("RIGHT", row, "LEFT", 573, 0)
 		row.atrStackMoney = mf
 	end
 	Atr_SetMoney(mf, money)
 	mf:Show()
 end
 
--- "Deposit:" line of the Sell tab
 function Atr_ShowDepositMoney(money, suffix)
 	local mf = AtrNS.depositMoney
 	if not money then
@@ -596,8 +560,7 @@ function Atr_ShowDepositMoney(money, suffix)
 end
 
 ----------------------------------------------------------------------
--- odds and ends the 3.x code takes for granted
-----------------------------------------------------------------------
+
 
 function Atr_ItemStackSize(link)
 	if not link then return 0 end
@@ -605,11 +568,9 @@ function Atr_ItemStackSize(link)
 	return stack or 0
 end
 
--- no sort-clear call on 1.12; Auctionator only used it to start from a known state
 function Atr_SortAuctionClearSort(kind)
 end
 
--- the stock helper returns nil until the first scroll
 do
 	local origGetOffset = G.FauxScrollFrame_GetOffset
 	if origGetOffset then
@@ -625,7 +586,6 @@ if not G.ClearCursor then
 	end
 end
 
--- addon memory reporting does not exist on 1.12 (only used by /atr mem)
 if not G.UpdateAddOnMemoryUsage then
 	function UpdateAddOnMemoryUsage() end
 end

@@ -1,5 +1,3 @@
------------------------------------------
-
 AtrQuery = {};
 AtrQuery.__index = AtrQuery;
 
@@ -30,8 +28,6 @@ function AtrQuery:CheckForDuplicatePage (pagenum)
 
 
 	if (self.prevPage) then
---		zc.msg_atr ("Comparing page ", pagenum, " to pge ", self.prevPage.pagenum);
-	
 		if (self.prevPage.pagenum == pagenum) then
 			return false;
 		end
@@ -61,40 +57,29 @@ function AtrQuery:CheckForDuplicatePage (pagenum)
 			numDupItems = numDupItems + 1;
 		end
 
-		if (x > 1 and allItemsIdentical and thisPage.items[x] ~= thisPage.items[x-1]) then		-- handle those numnuts who post 200 identical auctions
+		if (x > 1 and allItemsIdentical and thisPage.items[x] ~= thisPage.items[x-1]) then
 			allItemsIdentical = false;
 		end
-					
-
 	end
 
 	if (prevPage ~= nil and prevPage.numOnPage ~= thisPage.numOnPage) then
-	
---		zc.msg_pink ("page is unique - numauctions didn't match");
 		dupPageFound = false;
 		
 	elseif (dupPageFound and allItemsIdentical) then
 	
---		zc.msg_red ("Dup page found but all items identical: thisPage.numOnPage: ", thisPage.numOnPage);
 		dupPageFound = false;
 	
 	elseif (not dupPageFound) then
-	
---		zc.msg_pink ("page is unique");
 	end
-	
 	
 	if (dupPageFound) then
 	
 		self.numDupPages = self.numDupPages + 1;
---		zc.msg_atr ("DUPLICATE PAGE FOUND: thisPage.numOnPage: ", thisPage.numOnPage, "  numDupItems: ", numDupItems);
 	else
 		self.prevPage = thisPage;
 	end
-
 	return dupPageFound;
 end
-
 
 -----------------------------------------
 
@@ -112,6 +97,5 @@ function AtrQuery:BuildItemIDstr(name, count, minBid, buyoutPrice, bidAmount)
 	if (name) then
 		return name.."_"..count.."_"..minBid.."_"..buyoutPrice.."_"..bidAmount;
 	end
-		
 	return "";
 end

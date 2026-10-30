@@ -1,6 +1,3 @@
--- AuctionatorOptions.lua: the 3.x options panels lived in the Interface Options window, which 1.12 does not have.
--- The panels themselves (AuctionatorConfig.xml) are reused; this file hosts them in one standalone window.
-
 local TAB_ORDER = { "Atr_BasicOptionsFrame", "Atr_TooltipsOptionsFrame", "Atr_UCConfigFrame",
 	"Atr_StackingOptionsFrame", "Atr_ScanningOptionsFrame", "AuctionatorDescriptionFrame" }
 

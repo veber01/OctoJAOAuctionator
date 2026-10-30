@@ -1,14 +1,11 @@
-
 local addonName, addonTable = "Auctionator", AtrNS; 
 local zc = addonTable.zc;
-
 
 local Atr_orig_RecipeKnown_EventScan;
 local Atr_orig_LootLink_OnEvent;
 local Atr_orig_WOWEcon_Scan_AH;
 
 -----------------------------------------
-
 
 local function Atr_RecipeKnown_EventScan (rkSelf, rkEvent, rkArg1)
 
@@ -19,7 +16,7 @@ local function Atr_RecipeKnown_EventScan (rkSelf, rkEvent, rkArg1)
 		end
 	
 		local numBatchAuctions = GetNumAuctionItems("list");
-		if (numBatchAuctions > 50) then		-- full scan
+		if (numBatchAuctions > 50) then
 			return;
 		end
 	end
@@ -38,7 +35,7 @@ local function Atr_LootLink_OnEvent ()
 		end
 	
 		local numBatchAuctions = GetNumAuctionItems("list");
-		if (numBatchAuctions > 50) then		-- full scan
+		if (numBatchAuctions > 50) then
 			return;
 		end
 	end
@@ -62,7 +59,6 @@ local function Atr_WOWEcon_Scan_AH ()
 	Atr_orig_WOWEcon_Scan_AH ();
 end
 
-
 -----------------------------------------
 
 function Atr_Check_For_Conflicts (addonName)
@@ -84,5 +80,4 @@ function Atr_Check_For_Conflicts (addonName)
 		WOWEcon_Scan_AH = Atr_WOWEcon_Scan_AH
 		zc.msg_yellow ("Auctionator is patching WowEcon to prevent a known conflict.");
 	end
-
 end

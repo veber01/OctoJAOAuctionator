@@ -1,4 +1,3 @@
-
 local addonName, addonTable = "Auctionator", AtrNS; 
 local zc = addonTable.zc;
 
@@ -81,9 +80,7 @@ function AtrSearch:Init (searchText, exact, rescanThreshold, callback)
 		if (not self.items[searchText]) then		
 			self.items[searchText] = Atr_FindScanAndInit (searchText);
 		end
-		
 	end
-	
 end
 
 -----------------------------------------
@@ -113,15 +110,12 @@ function Atr_FindScan (itemName, init)
 	elseif (init) then
 		gAllScans[itemNameLC]:Init (itemName);
 	end
-	
 	return gAllScans[itemNameLC];
 end
 
 -----------------------------------------
 
 function Atr_ClearScanCache ()
-
---	zc.msg_red ("Clearing Scan Cache");
 
 	for a,v in pairs (gAllScans) do
 		if (a ~= "nil") then
@@ -175,9 +169,7 @@ function AtrScan:UpdateItemLink (itemLink)
 		if (quality == 3)	then	self.itemTextColor = { 0.0, 0.5, 1.0 };	end
 		if (quality == 4)	then	self.itemTextColor = { 0.7, 0.3, 1.0 };	end
 	end
-
 end
-
 
 -----------------------------------------
 
@@ -222,7 +214,6 @@ function AtrSearch:GetFirstScan()
 
 end
 
-
 -----------------------------------------
 
 function AtrSearch:Start ()
@@ -245,13 +236,11 @@ function AtrSearch:Start ()
 	
 	Atr_SortAuctionClearSort ("list");
 
-	BrowseName:SetText (self.searchText);		-- not necessary but nice when user switches to Browse tab
+	BrowseName:SetText (self.searchText);
 
 	self.current_page		= 0;
 	self.processing_state	= KM_PREQUERY;
-
 	self:Continue();
-	
 end
 
 -----------------------------------------
@@ -273,8 +262,6 @@ function AtrSearch:CheckForDuplicatePage ()
 	local isDup = self.query:CheckForDuplicatePage(self.current_page);
 
 	if (isDup) then
---		zc.msg_red ("DUPLICATE PAGE FOUND: ", "  current_page: ", self.current_page, "  numDupPages: ", self.query.numDupPages);
-
 		self.current_page	= self.current_page - 1;   -- requery the page
 		
 		self.processing_state = KM_PREQUERY;
@@ -283,32 +270,28 @@ function AtrSearch:CheckForDuplicatePage ()
 	return isDup;
 end
 
-
 -----------------------------------------
 
 function AtrSearch:AnalyzeResultsPage()
 
 	self.processing_state = KM_ANALYZING;
 
-	if (self.query.numDupPages > 10) then 	 -- hopefully this will never happen but need check to avoid looping
-		return true;						 -- done
+	if (self.query.numDupPages > 10) then
+		return true;
 	end
-
 
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
 
 	self.totalPages = math.ceil (totalAuctions / 50);
 
-	if (self.current_page == 1 and totalAuctions > 2000) then -- give Blizz servers a break
+	if (self.current_page == 1 and totalAuctions > 2000) then
 		Atr_Error_Display (ZT("Too many results\n\nPlease narrow your search"));
-		return true;  -- done
+		return true;
 	end
 
 	if (totalAuctions >= 50) then
 		Atr_SetMessage (string.format (ZT("Scanning auctions: page %d"), self.current_page).." / "..self.totalPages);
 	end
-
-	-- analyze
 
 	local numNilOwners = 0;
 
@@ -382,12 +365,9 @@ function AtrScan:AddScanItem (name, stackSize, buyoutPrice, owner, numAuctions, 
 
 		Atr_AddToLowPrices (self.lowprices, itemPrice);
 	end
-
 end
 
-
 -----------------------------------------
-
 
 function AtrScan:SubtractScanItem (name, stackSize, buyoutPrice)
 
@@ -402,7 +382,6 @@ function AtrScan:SubtractScanItem (name, stackSize, buyoutPrice)
 			return;
 		end
 	end
-
 end
 
 -----------------------------------------
@@ -477,16 +456,12 @@ function AtrSearch:Continue()
 
 		local queryString = self.searchText;
 
-		queryString = zc.UTF8_Truncate (queryString,63);	-- attempting to reduce number of disconnects
-
---	zc.md (queryString.."  page:"..self.current_page);
+		queryString = zc.UTF8_Truncate (queryString,63);
 		
 		local itemClass		= 0;
 		local itemSubclass	= 0;
 		local minLevel		= nil;
 		local maxLevel		= nil;
-		
-		-- (the 3.x port narrowed exact searches by item class here; a plain name query is the safest on 1.12)
 
 		if (self:IsCompoundSearch(queryString)) then
 		
@@ -501,14 +476,11 @@ function AtrSearch:Continue()
 		self.processing_state	= KM_POSTQUERY;
 		self.current_page		= self.current_page + 1;
 	end
-
 end
 
 -----------------------------------------
 
 local gSortScansBy;
-
------------------------------------------
 
 local function Atr_SortScans (x, y)
 
@@ -523,7 +495,6 @@ local function Atr_SortScans (x, y)
 	
 	if (gSortScansBy == ATR_SORTBY_PRICE_ASC) then		return xprice < yprice;		end
 	if (gSortScansBy == ATR_SORTBY_PRICE_DES) then		return xprice > yprice;		end
-
 end
 
 -----------------------------------------
@@ -538,7 +509,7 @@ function AtrSearch:Finish()
 	
 	self.sortedScans = nil;
 	
-	local wasExactSearch = (self:NumScans() == 1);		-- search returned only 1 item
+	local wasExactSearch = (self:NumScans() == 1);
 	
 	local x = 1;
 	self.sortedScans = {};
@@ -553,8 +524,6 @@ function AtrSearch:Finish()
 
 		scn:CondenseAndSort ();
 
-		-- update the fullscan DB
-		
 		local newprice = Atr_CalcNewDBprice (scn.itemName, scn.lowprices);
 		
 		if (newprice > 0) then
@@ -565,15 +534,11 @@ function AtrSearch:Finish()
 	end
 	
 	Atr_ClearBrowseListings();
-	
 	gSortScansBy = self.sortHow;
 	table.sort (self.sortedScans, Atr_SortScans);
-	
 end
 
 -----------------------------------------
-
--- 1.12 port: show what has been found so far while the remaining pages are still coming in
 
 function AtrSearch:UpdatePartial()
 
@@ -600,7 +565,6 @@ function AtrSearch:IsActive()
 end
 
 -----------------------------------------
--- a purchase takes over the auction queries: ask for the page whose answer may get lost again later
 
 function AtrSearch:Pause()
 
@@ -667,8 +631,6 @@ end
 
 function Atr_ClearBrowseListings()
 
-	-- the 3.x version fired a dummy query to empty the Browse list; on 1.12 that needs a busy wait, so we skip it
-
 end
 
 -----------------------------------------
@@ -680,14 +642,11 @@ function Atr_SortAuctionData (x, y)
 	end
 
 	return x.itemPrice < y.itemPrice;
-
 end
 
 -----------------------------------------
 
 function AtrScan:CondenseAndSort ()
-
-	----- Condense the scan data into a table that has only a single entry per stacksize/price combo
 
 	self.sortedData	= {};
 
@@ -701,8 +660,6 @@ function AtrScan:CondenseAndSort ()
 		
 		if (sd.owner == UnitName("player")) then
 			ownerCode = "y";
---		elseif (Atr_IsMyToon (sd.owner)) then
---			ownerCode = sd.owner;
 		end
 
 		local key = "_"..sd.stackSize.."_"..sd.buyoutPrice.."_"..ownerCode..dataType;
@@ -733,10 +690,7 @@ function AtrScan:CondenseAndSort ()
 			
 			conddata[key] = data;
 		end
-
 	end
-
-	----- create a table of these entries
 
 	local n = 1;
 
@@ -747,14 +701,8 @@ function AtrScan:CondenseAndSort ()
 		n = n + 1;
 	end
 
-	-- sort the table by itemPrice
-
 	table.sort (self.sortedData, Atr_SortAuctionData);
-
-	-- analyze and store some info about the data
-
 	self:AnalyzeSortData ();
-
 end
 
 -----------------------------------------
@@ -762,7 +710,7 @@ end
 function AtrScan:AnalyzeSortData ()
 
 	self.absoluteBest			= nil;
-	self.bestPrices				= {};		-- a table with one entry per stacksize that is the cheapest auction for that particular stacksize
+	self.bestPrices				= {};
 	self.numMatches				= 0;
 	self.numMatchesWithBuyout	= 0;
 	self.hasStack				= false;
@@ -771,8 +719,6 @@ function AtrScan:AnalyzeSortData ()
 	self.numYourSingletons		= 0;
 
 	local j, sd;
-
-	----- find the best price per stacksize and overall -----
 
 	for j,sd in ipairs(self.sortedData) do
 
@@ -828,7 +774,6 @@ function AtrScan:FindInSortedData (stackSize, buyoutPrice)
 	return 0;
 end
 
-
 -----------------------------------------
 
 function AtrScan:FindMatchByStackSize (stackSize)
@@ -856,7 +801,6 @@ function AtrScan:FindMatchByStackSize (stackSize)
 	end
 
 	return index;
-	
 end
 
 -----------------------------------------
@@ -874,7 +818,6 @@ function AtrScan:FindMatchByYours ()
 	end
 
 	return index;
-
 end
 
 -----------------------------------------
@@ -892,9 +835,7 @@ function AtrScan:FindCheapest ()
 	end
 
 	return index;
-
 end
-
 
 -----------------------------------------
 
@@ -932,7 +873,6 @@ ATR_FS_CLEANING_UP	= 3;
 
 gAtr_FullScanState = ATR_FS_NULL;
 
-
 -----------------------------------------
 
 function Atr_GetDBsize()
@@ -951,7 +891,6 @@ end
 
 local gNumAdded, gNumUpdated;
 
--- The 1.12 client has no "get all" query, so a full scan walks every page of an empty query.
 local gFS_page			= 0;
 local gFS_pages			= 0;
 local gFS_lowprices		= {};
@@ -1046,9 +985,6 @@ function Atr_AddToLowPrices (lowprices, itemPrice)
 	return false;
 end
 
-
-
-
 -----------------------------------------
 
 local gScanDetails = {}
@@ -1064,7 +1000,6 @@ function Atr_FullScanMoreDetails ()
 	zc.msg_atr ("|cff1eff00   "..ZT("Uncommon items")..": |r",	gScanDetails.numEachQual[3]);
 	zc.msg_atr ("|cffffffff   "..ZT("Common items")..": |r",		gScanDetails.numEachQual[2]);
 	zc.msg_atr ("|cff9d9d9d   "..ZT("Poor items")..": |r",		gScanDetails.numEachQual[1]);
-	
 	
 	if (gScanDetails.numRemoved[4] > 0) then		zc.msg_atr (ZT("Rare items").." "..ZT("removed from database")..": |cffffffff",		gScanDetails.numRemoved[4]);		end
 	if (gScanDetails.numRemoved[3] > 0) then		zc.msg_atr (ZT("Uncommon items").." "..ZT("removed from database")..": |cffffffff",	gScanDetails.numRemoved[3]);		end
@@ -1107,7 +1042,7 @@ function Atr_FullScanAnalyze()
 
 				if (itemPrice > 0) then
 					if (not gFS_lowprices[name]) then
-						gFS_lowprices[name] = {BIGNUM,BIGNUM,BIGNUM};		-- one extra for later
+						gFS_lowprices[name] = {BIGNUM,BIGNUM,BIGNUM};
 					end
 
 					Atr_AddToLowPrices (gFS_lowprices[name], itemPrice);
@@ -1238,8 +1173,6 @@ function Atr_ShowFullScanFrame()
 					.."</body></html>"
 					;
 
-
-
 	Atr_FullScanHTML:SetText (expText);
 	Atr_FullScanHTML:SetSpacing (3);
 end
@@ -1274,7 +1207,7 @@ function Atr_FullScanFrameIdle()
 			return;
 		end
 
-		if (gFS_waiting and GetTime() - gFS_sentAt > 20) then		-- no answer: ask again
+		if (gFS_waiting and GetTime() - gFS_sentAt > 20) then
 			gFS_waiting = false;
 		end
 
@@ -1284,5 +1217,4 @@ function Atr_FullScanFrameIdle()
 			Atr_QueryAuctionItems ("", nil, nil, 0, 0, 0, gFS_page, 0, 0);
 		end
 	end
-
 end

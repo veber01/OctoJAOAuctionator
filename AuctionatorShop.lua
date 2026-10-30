@@ -45,7 +45,6 @@ function Atr_SList.create (name, isRecents)
 	return slist;
 end
 
-
 -----------------------------------------
 
 function Atr_SortSlists (x, y)
@@ -68,14 +67,13 @@ function Atr_SList:AddItem (itemName)
 	if (self.isRecents) then
 		table.insert (self.items, 1, itemName);
 		
-		while (getn(self.items) > 50) do		-- max 50 items on recents list
+		while (getn(self.items) > 50) do
 			table.remove (self.items);
 		end
 	else
 		table.insert (self.items, itemName);
 		self.isSorted = false;
 	end
-
 	
 end
 
@@ -92,7 +90,6 @@ function Atr_SList:RemoveItem (itemName)
 			return;
 		end
 	end
-
 end
 
 -----------------------------------------
@@ -102,8 +99,6 @@ function Atr_DisplaySlist ()
 		gCurrentSList:DisplayX ();
 	end
 end
-
-
 
 -----------------------------------------
 
@@ -126,11 +121,10 @@ function Atr_SList:DisplayX ()
 		table.sort (self.items, sortSlist);
 	end
 
-
 	local numrows = getn(self.items);
 
-	local line;							-- 1 through NN of our window to scroll
-	local dataOffset;					-- an index into our data calculated from the scroll offset
+	local line;
+	local dataOffset;
 
 	FauxScrollFrame_Update (Atr_Hlist_ScrollFrame, numrows, SLITEMS_NUM_LINES, 16);
 
@@ -166,8 +160,6 @@ function Atr_SList:DisplayX ()
 			lineEntry:Hide();
 		end
 	end
-
-
 end
 
 -----------------------------------------
@@ -182,9 +174,7 @@ function Atr_SList:FindItemIndex (itemName)
 			return n;
 		end
 	end
-	
 	return 0;
-
 end
 
 -----------------------------------------
@@ -257,7 +247,6 @@ function Atr_Shop_OnFinishScan ()
 	Atr_Search_Button:Enable();
 end
 
-
 -----------------------------------------
 
 function Atr_DropDownSL_OnLoad (self)
@@ -284,14 +273,6 @@ function Atr_DropDownSL_Initialize()
 		info.func = Atr_DropDownSL_OnClick;
 		info.checked = nil;
 		info.owner = Atr_DropDownSL;
-
---		info.colorCode = nil;
-		
---		if (slist.isRecents) then
---			info.colorCode = "|c00ffddaa";
---		end
-
-
 		UIDropDownMenu_AddButton(info);
 
 	end
@@ -329,11 +310,7 @@ function Atr_SEntryOnClick ()
 	end
 	
 	Atr_Shop_UpdateUI();
-
---	gCurrentSList:DisplayX();		-- for the highlight
 end
-
-
 
 -----------------------------------------
 
@@ -347,14 +324,12 @@ local function FinishCreateNewSList(text)
 	for n = 1,num do
 		if (AUCTIONATOR_SHOPPING_LISTS[n] == slist) then
 			UIDropDownMenu_SetSelectedValue(Atr_DropDownSL, n);
-			UIDropDownMenu_SetText (text, Atr_DropDownSL);	-- needed to fix bug in UIDropDownMenu
+			UIDropDownMenu_SetText (text, Atr_DropDownSL);
 			slist:DisplayX();
 			Atr_SetUINeedsUpdate();
 			break;
 		end
 	end
-	
-
 end
 
 -----------------------------------------
@@ -432,8 +407,6 @@ function Atr_DelSList_OnClick ()
 	
 end
 
-
-
 -----------------------------------------
 
 function Atr_AddToSListOnClick ()
@@ -450,7 +423,6 @@ function Atr_AddToSListOnClick ()
 			Atr_SetUINeedsUpdate();
 		end
 	end
-
 end
 
 -----------------------------------------
@@ -464,9 +436,7 @@ function Atr_RemFromSListOnClick ()
 		Atr_SetUINeedsUpdate();
 
 	end
-
 end
-
 
 -----------------------------------------
 
@@ -489,7 +459,7 @@ function Atr_Shop_UpdateUI ()
 
 		if (gCurrentSList:IsItemOnList (iName)) then
 			Atr_RemFromSListButton:Enable();
-		elseif (iName ~= "" and iName ~= nil and gCurrentSList ~= AUCTIONATOR_SHOPPING_LISTS[1]) then		-- hack
+		elseif (iName ~= "" and iName ~= nil and gCurrentSList ~= AUCTIONATOR_SHOPPING_LISTS[1]) then
 			Atr_AddToSListButton:Enable();
 		end
 		
@@ -504,7 +474,4 @@ function Atr_Shop_UpdateUI ()
 	else
 		Atr_Back_Button:Hide();
 	end
-	
 end
-
-

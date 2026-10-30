@@ -1,18 +1,21 @@
 local pendingLocale, selectorFrame, confirmFrame
 
 local function GetSavedLocale()
+
     if AUCTIONATOR_LOCALE and AUCTIONATOR_LOCALE ~= "" then return AUCTIONATOR_LOCALE end
     if AUCTIONATOR_SAVEDVARS and AUCTIONATOR_SAVEDVARS.locale then return AUCTIONATOR_SAVEDVARS.locale end
     return GetLocale() or "enUS"
 end
 
 local function SaveLocale(locale)
+
     AUCTIONATOR_LOCALE = locale
     if not AUCTIONATOR_SAVEDVARS then AUCTIONATOR_SAVEDVARS = {} end
     AUCTIONATOR_SAVEDVARS.locale = locale
 end
 
 local function ApplyLocale(locale)
+
     SaveLocale(locale)
     if type(Atr_PickLocalizationTable) == "function" then
         Atr_PickLocalizationTable(locale)
@@ -26,7 +29,9 @@ local function ApplyLocale(locale)
 end
 
 local function CreateConfirmPopup()
+
     if confirmFrame then return confirmFrame end
+
     local f = CreateFrame("Frame", "Atr_LanguageConfirmFrame", UIParent)
     f:SetWidth(300); f:SetHeight(120); f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     f:SetFrameStrata("DIALOG")
@@ -34,10 +39,13 @@ local function CreateConfirmPopup()
     f:EnableMouse(true); f:SetMovable(true); f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", function() this:StartMoving() end)
     f:SetScript("OnDragStop", function() this:StopMovingOrSizing() end); f:Hide()
+
     local title=f:CreateFontString(nil,"ARTWORK","GameFontNormal")
     title:SetPoint("TOP",f,"TOP",0,-18); title:SetText("Change Auctionator language?")
+
     local msg=f:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
     msg:SetPoint("TOP",title,"BOTTOM",0,-10); msg:SetText("Accepting will reload the UI to apply the language.")
+    
     local accept=CreateFrame("Button",nil,f,"UIPanelButtonTemplate")
     accept:SetWidth(90); accept:SetHeight(22); accept:SetPoint("BOTTOM",f,"BOTTOM",-52,18); accept:SetText("Accept")
     accept:SetScript("OnClick",function()
@@ -51,6 +59,7 @@ local function CreateConfirmPopup()
         end
         f:Hide()
     end)
+
     local cancel=CreateFrame("Button",nil,f,"UIPanelButtonTemplate")
     cancel:SetWidth(90); cancel:SetHeight(22); cancel:SetPoint("LEFT",accept,"RIGHT",14,0); cancel:SetText("Cancel")
     cancel:SetScript("OnClick",function() pendingLocale=nil; UIDropDownMenu_SetSelectedValue(selectorFrame.dropdown,GetSavedLocale()); f:Hide() end)
@@ -74,9 +83,12 @@ local function LanguageDropdown_Initialize()
 end
 
 local function CreateLanguageSelector()
+
     if selectorFrame or not Atr_BasicOptionsFrame then return end
+
     local label=Atr_BasicOptionsFrame:CreateFontString("Atr_LanguageSelectorLabel","ARTWORK","GameFontHighlight")
     label:SetPoint("TOPLEFT",Atr_BasicOptionsFrame,"TOPLEFT",30,-302); label:SetText("Language")
+
     local dropdown=CreateFrame("Frame","Atr_LanguageSelectorDropdown",Atr_BasicOptionsFrame,"UIDropDownMenuTemplate")
     dropdown:SetPoint("TOPLEFT",Atr_BasicOptionsFrame,"TOPLEFT",150,-296)
     UIDropDownMenu_SetWidth(150,dropdown); UIDropDownMenu_JustifyText("LEFT",dropdown)

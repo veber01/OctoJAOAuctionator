@@ -1,27 +1,23 @@
-
-
------------------------------------------
-
 local origGetSellValue		= GetSellValue;
 local origGetAuctionBuyout	= GetAuctionBuyout;
 
 -----------------------------------------
 
-function GetSellValue (item)		-- Tekkub's API
+function GetSellValue (item)
 	
 	return Atr_GetSellValue(item);
 end
 
 -----------------------------------------
 
-function GetAuctionBuyout (item)		-- Tekkub's API
+function GetAuctionBuyout (item)
 	
 	return Atr_GetAuctionBuyout(item);
 end
 
 -----------------------------------------
 
-function Atr_GetSellValue (item)		-- Just like Tekkub's API but for when you want to be sure you're calling Auctionator's version of it
+function Atr_GetSellValue (item)
 
 	local _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, sellval = Atr_GetItemInfo (item);
 
@@ -36,10 +32,9 @@ function Atr_GetSellValue (item)		-- Just like Tekkub's API but for when you wan
 	return 0;
 end
 
-
 -----------------------------------------
 
-function Atr_GetAuctionBuyout (item)  -- Just like Tekkub's API but for when you want to be sure you're calling Auctionator's version of it
+function Atr_GetAuctionBuyout (item)
 
 	local sellval;
 	
@@ -77,4 +72,3 @@ function Atr_GetDisenchantValue (item)
 	
 	return nil;
 end
-

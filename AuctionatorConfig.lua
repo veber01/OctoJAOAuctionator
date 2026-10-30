@@ -20,23 +20,15 @@ function Atr_LoadOptionsSubPanel (f, name, title, subtitle)
 	getglobal (frameName.."_ATitle"):SetText (title);
 	getglobal (frameName.."_BTitle"):SetText (subtitle);
 
-	-- 3.x registered these with the Interface Options window; here they live in Atr_OptionsWindow
 	tinsert (AtrNS.optionPanels, f);
-
 end
-
-
------------------------------------------
 
 -----------------------------------------
 
 function Atr_Options_Cancel ()
 
 	Atr_InitOptionsPanels();
-
 end
-
-
 -----------------------------------------
 
 function Atr_InitOptionsPanels()
@@ -51,7 +43,6 @@ function Atr_InitOptionsPanels()
 	Atr_SetupStackingFrame();
 	Atr_SetupOptionsFrame();
 	Atr_SetupScanningConfigFrame();
-
 end
 
 -----------------------------------------
@@ -68,11 +59,8 @@ function Atr_SetupOptionsFrame()
 
 	AuctionatorDescriptionHTML:SetText (expText);
 	AuctionatorDescriptionHTML:SetSpacing (3);
-
 	AuctionatorVersionText:SetText (ZT("Version")..": "..AuctionatorVersion);
-
 end
-
 
 -----------------------------------------
 
@@ -113,7 +101,6 @@ function Atr_BasicOptionsFrame_Save()
 	Atr_ShowHide_StartingPrice();
 end
 
-
 -----------------------------------------
 
 function Atr_SetupBasicOptionsFrame()
@@ -130,7 +117,6 @@ function Atr_SetupBasicOptionsFrame()
 	AuctionatorOption_Def_Duration_CB:SetChecked (AUCTIONATOR_DEF_DURATION == "S" or AUCTIONATOR_DEF_DURATION == "M" or AUCTIONATOR_DEF_DURATION == "L");
 
 	Atr_SetDurationOptionRB (AUCTIONATOR_DEF_DURATION);
-
 end
 
 -----------------------------------------
@@ -147,7 +133,6 @@ function Atr_SetupTooltipsOptionsFrame ()
 	UIDropDownMenu_Initialize(Atr_deDetailsDD, Atr_deDetailsDD_Initialize);
 	UIDropDownMenu_SetSelectedValue(Atr_deDetailsDD, AUCTIONATOR_DE_DETAILS_TIPS);
 end
-
 
 -----------------------------------------
 
@@ -167,10 +152,7 @@ function Atr_TooltipsOptionsFrame_Save()
 	if (origValues ~= newValues) then
 		zc.msg_atr (ZT("tooltip configuration saved"));
 	end
-
-
 end
-
 
 -----------------------------------------
 
@@ -239,9 +221,7 @@ function Atr_Option_OnClick (self)
 	if (zc.StringContains (self:GetName(), "Open_SELL") and self:GetChecked()) then
 		AuctionatorOption_Open_BUY_CB:SetChecked (false);
 	end
-
 end
-
 
 -----------------------------------------
 
@@ -270,9 +250,7 @@ function Atr_SetupUCConfigFrame()
 	end
 
 	Atr_Starting_Discount:SetText (AUCTIONATOR_SAVEDVARS.STARTING_DISCOUNT);
-
 end
-
 
 -----------------------------------------
 
@@ -297,8 +275,6 @@ function Atr_UCConfigFrame_Save()
 	if (origValues ~= newValues) then
 		zc.msg_atr (ZT("undercutting configuration saved"));
 	end
-
-
 end
 
 -----------------------------------------
@@ -322,7 +298,6 @@ end
 local kStackList_LinesToDisplay = 12;
 local gStackList_SelectedIndex = 0;
 local gStackList_plist;
-
 
 kStackList_categories = {};
 
@@ -349,7 +324,6 @@ function Atr_SetupStackingFrame ()
 	end
 	
 	Atr_StackingList_Display();
-
 end
 
 -----------------------------------------
@@ -368,9 +342,6 @@ function Atr_StackingList_Display()
 	end
 
 	for text, spinfo in pairs (AUCTIONATOR_STACKING_PREFS) do
-
-		-- skip over any that were set automatically rather than explicitly by the user
-		-- and mark the built-in categories
 
 		if (spinfo.numstacks ~= 0) then
 			local sortkey = text;
@@ -395,9 +366,8 @@ function Atr_StackingList_Display()
 	table.sort (plist, plistSort)
 	
 	local totalRows = getn(plist);
-
-	local line;							-- 1 through NN of our window to scroll
-	local dataOffset;					-- an index into our data calculated from the scroll offset
+	local line;
+	local dataOffset;
 
 	FauxScrollFrame_Update (Atr_Stacking_ScrollFrame, totalRows, kStackList_LinesToDisplay, 16);
 
@@ -444,9 +414,7 @@ function Atr_StackingList_Display()
 			lineEntry:Hide();
 		end
 	end
-
 	zc.EnableDisable (Atr_StackingOptionsFrame_Edit, gStackList_SelectedIndex > 0);
-
 end
 
 -----------------------------------------
@@ -571,7 +539,6 @@ function Atr_Memorize_Forget()
 
 end
 
-
 -----------------------------------------
 
 function Atr_SONumStacks_OnLoad(self)
@@ -606,8 +573,6 @@ function Atr_SONumStacks_OnClick()
 	UIDropDownMenu_SetSelectedValue(this.owner, this.value);
 	Atr_Mem_stacksOf_text:SetText (ZT ((this.value == 1) and "stack of" or "stacks of"));
 end
-
-
 
 -----------------------------------------
 
@@ -646,7 +611,6 @@ function Atr_ShowOptionTooltip (elem)
 		GameTooltip:AddLine(text, 0.5, 0.5, 1.0, 1);
 		GameTooltip:Show();
 	end
-	
 end
 
 -----------------------------------------
@@ -670,7 +634,6 @@ function Atr_ScanningOptionsFrame_Save()
 	if (origValues ~= newValues) then
 		zc.msg_atr (ZT("scanning options saved"));
 	end
-	
 end
 
 -----------------------------------------
@@ -703,8 +666,6 @@ function Atr_scanLevelDD_showTip(self)
 	GameTooltip:Show();
 end
 
-
-
 -----------------------------------------
 
 function Atr_MakeOptionsFrameOpaque ()
@@ -725,7 +686,6 @@ function ShowInterfaceOptionsMask()
 	end
 
 	gInterfaceOptionsMask:Show();
-
 end
 
 -----------------------------------------
@@ -735,5 +695,3 @@ function HideInterfaceOptionsMask()
 		gInterfaceOptionsMask:Hide();
 	end
 end
-
-
