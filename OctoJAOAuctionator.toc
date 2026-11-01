@@ -1,6 +1,6 @@
 ## Interface: 11200
 ## Title: OctoJAOAuctionator
-## Version: 1.0.0
+## Version: 1.1.4
 ## Author: Happyness (Octo port by John The Baptist)
 ## Notes: Tweaked Auctionator for OctoWoW
 ## OptionalDeps: SellValue, pfUI
@@ -12,6 +12,11 @@ AuctionatorFonts.lua
 
 Locales\enUS.lua
 Locales\huHU.lua
+Locales\esES.lua
+Locales\deDE.lua
+Locales\frFR.lua
+
+Localization.lua
 
 zcUtils.lua
 
@@ -29,7 +34,7 @@ AuctionatorAPI.lua
 AuctionatorConfig.lua
 AuctionatorBuy.lua
 
-AuctionatorConfig.xml
+AuctionatorConfigUI.lua
 
 AuctionatorOptions.lua
 

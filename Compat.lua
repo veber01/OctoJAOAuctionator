@@ -63,7 +63,7 @@ do
 end
 
 function Atr_GetVersion()
-	return "1.0.0"
+	return "1.1.4"
 end
 
 ----------------------------------------------------------------------
@@ -271,13 +271,15 @@ local function EnsureAuctionPages()
     end
 end
 
+Atr_EnsureAuctionPages = EnsureAuctionPages
+
 
 local function Step()
     local p = post
     if not p then return end
     local now = GetTime()
     if not AtrNS.ahOpen and AuctionFrame and not AuctionFrame:IsVisible() then
-        Finish("Auction house closed, posting stopped.")
+        Finish(ZT("Auction house closed, posting stopped."))
         return
     end
     if p.state == "prep" then
@@ -305,7 +307,7 @@ local function Step()
             bag, slot, count2 = FindStack(p.id, p.size)
         end
         if not bag then
-            Finish("Not enough items to finish posting (" .. p.done .. " of " .. p.n .. " posted).")
+            Finish(string.format(ZT("Not enough items to finish posting (%d of %d posted)."), p.done, p.n))
             return
         end
  
@@ -319,7 +321,7 @@ local function Step()
         else
             local fb, fs = FindFreeSlot()
             if not fb then
-                Finish("No free bag slot to split the stack into (" .. p.done .. " of " .. p.n .. " posted).")
+                Finish(string.format(ZT("No free bag slot to split the stack into (%d of %d posted)."), p.done, p.n))
                 return
             end
             SplitContainerItem(bag, slot, p.size)
@@ -336,7 +338,7 @@ local function Step()
             p.t = now + 0.1
         elseif now - p.t > 3 then
             if CursorHasItem() then DropCursorAnywhere() end
-            Finish("Could not split the stack (" .. p.done .. " of " .. p.n .. " posted).")
+            Finish(string.format(ZT("Could not split the stack (%d of %d posted)."), p.done, p.n))
         end
     elseif p.state == "placing" then
         local link, name, count = Atr_SellSlotLink()
@@ -349,7 +351,7 @@ local function Step()
             end
             if now - p.t > 3 then
                 if CursorHasItem() then DropCursorAnywhere() end
-                Finish("Could not place the item in the auction slot (" .. p.done .. " of " .. p.n .. " posted).")
+                Finish(string.format(ZT("Could not place the item in the auction slot (%d of %d posted)."), p.done, p.n))
             end
         end
     elseif p.state == "ready" then
@@ -374,7 +376,7 @@ local function Step()
                 p.t = now + 0.3
             end
         elseif now - p.t > 6 then
-            Finish("The server did not confirm the auction (" .. p.done .. " of " .. p.n .. " posted).")
+            Finish(string.format(ZT("The server did not confirm the auction (%d of %d posted)."), p.done, p.n))
         end
     end
 end
@@ -396,7 +398,7 @@ driver:SetScript("OnEvent", function()
 	if event == "AUCTION_HOUSE_CLOSED" then
 		post = nil
 	elseif event == "UI_ERROR_MESSAGE" and (post.state == "placing" or post.state == "ready" or post.state == "posting") then
-		Finish("Posting stopped: " .. tostring(arg1))
+		Finish(string.format(ZT("Posting stopped: %s"), tostring(arg1)))
 	end
 end)
 
@@ -427,6 +429,7 @@ end
 end
 
 function Atr_SubmitCurrentAuction(startingBid, buyout, minutes)
+    EnsureAuctionPages()
     StartAuction(startingBid, buyout, minutes)
 end
 

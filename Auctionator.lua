@@ -1091,7 +1091,7 @@ function Atr_LogMsg (itemlink, itemcount, price, numstacks)
 	logmsg = logmsg.."   "..zc.priceToString(price);
 
 	if (numstacks > 1 and itemcount > 1) then
-		logmsg = logmsg.."  per stack";
+		logmsg = logmsg.."  "..ZT("per stack");
 	end
 
 	zc.msg_yellow (logmsg);
@@ -3222,6 +3222,7 @@ end
 
 function Atr_CancelAuction(x)
 
+	if Atr_EnsureAuctionPages then Atr_EnsureAuctionPages(); end
 	CancelAuction(x);
 
 end

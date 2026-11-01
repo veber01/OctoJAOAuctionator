@@ -53,6 +53,9 @@ function Atr_SetupOptionsFrame()
 					.."<p>"..ZT("The latest information on OctoJAOAuctionator can be found at").." github.com/veber01/OctoJAOAuctionator/".."</p>"
 					.."<p><br/>"
 					.."|cffaaaaaa"..string.format (ZT("Hungarian translation by %s"),  "|rHappyness").."<br/>"
+					.."|cffaaaaaa"..string.format (ZT("German (AI) translation by %s"),  "|rHappyness").."<br/>"
+					.."|cffaaaaaa"..string.format (ZT("French (AI) translation by %s"),  "|rHappyness").."<br/>"
+					.."|cffaaaaaa"..string.format (ZT("Spanish (AI) translation by %s"),  "|rHappyness").."<br/>"
 					.."</p>"
 					.."</body></html>"
 					;
@@ -318,8 +321,7 @@ function Atr_SetupStackingFrame ()
 
 		for n = 1, kStackList_LinesToDisplay do
 			local y = -5 - ((n-1)*16);
-			line = CreateFrame("BUTTON", "Atr_StackList"..n, Atr_Stacking_List, "Atr_StackingEntryTemplate");
-			line:SetPoint("TOP", 0, y);
+			line = Atr_CreateStackingEntry (n, Atr_Stacking_List, y);
 		end
 	end
 	
@@ -681,7 +683,7 @@ local gInterfaceOptionsMask;
 function ShowInterfaceOptionsMask()
 
 	if (gInterfaceOptionsMask == nil) then
-		gInterfaceOptionsMask = CreateFrame ("Frame", "Atr_Mask_StdOptions", Atr_OptionsWindow, "Atr_Mask_StdOptionsTempl");
+		gInterfaceOptionsMask = Atr_CreateOptionsMask (Atr_OptionsWindow);
 		gInterfaceOptionsMask:SetFrameLevel (Atr_OptionsWindow:GetFrameLevel() + 10);
 	end
 

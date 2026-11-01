@@ -56,7 +56,7 @@ errorText:SetPoint("CENTER", errorFrame, "CENTER", 0, 20)
 local errorOkay = CreateFrame("Button", nil, errorFrame, "UIPanelButtonTemplate")
 errorOkay:SetWidth(60); errorOkay:SetHeight(22)
 errorOkay:SetPoint("BOTTOM", errorFrame, "BOTTOM", 0, 20)
-errorOkay:SetText("OKAY")
+Atr_LT(errorOkay, "OKAY")
 errorOkay:SetScript("OnClick", function() Atr_Error_Frame:Hide() end)
 
 local confirmFrame = CreateAuctionatorDialog("Atr_Confirm_Frame", 300, 150, "DIALOG")
@@ -73,13 +73,13 @@ confirmText:SetSpacing(3)
 local confirmCancel = CreateFrame("Button", "Atr_Confirm_Cancel", confirmFrame, "UIPanelButtonTemplate")
 confirmCancel:SetWidth(60); confirmCancel:SetHeight(22)
 confirmCancel:SetPoint("BOTTOMRIGHT", confirmFrame, "BOTTOMRIGHT", -30, 20)
-confirmCancel:SetText("CANCEL")
+Atr_LT(confirmCancel, "CANCEL")
 confirmCancel:SetScript("OnClick", function() Atr_Confirm_No() end)
 
 local confirmOkay = CreateFrame("Button", nil, confirmFrame, "UIPanelButtonTemplate")
 confirmOkay:SetWidth(60); confirmOkay:SetHeight(22)
 confirmOkay:SetPoint("RIGHT", confirmCancel, "LEFT", -10, 0)
-confirmOkay:SetText("OKAY")
+Atr_LT(confirmOkay, "OKAY")
 confirmOkay:SetScript("OnClick", function() Atr_Confirm_Yes() end)
 end
 
@@ -115,20 +115,19 @@ local checkText = check:CreateFontString(nil, "BACKGROUND", "GameFontNormal")
 checkText:SetWidth(310)
 checkText:SetHeight(50)
 checkText:SetPoint("TOPLEFT", check, "TOPLEFT", 5, -34)
-checkText:SetText("Automatically cancel all of your auctions|n|nthat are not the lowest priced?")
-
+Atr_LT(checkText, "Automatically cancel all of your auctions|n|nthat are not the lowest priced?")
 ---------------------------------------
 
 local yes = CreateFrame("Button", nil, check, "UIPanelButtonTemplate")
 yes:SetWidth(210); yes:SetHeight(22)
 yes:SetPoint("BOTTOM", check, "BOTTOM", 0, 65)
-yes:SetText("Yes, cancel them")
+Atr_LT(yes, "Yes, cancel them")
 yes:SetScript("OnClick", function() Atr_Cancel_Undercuts_OnClick() end)
 
 local no = CreateFrame("Button", nil, check, "UIPanelButtonTemplate")
 no:SetWidth(210); no:SetHeight(22)
 no:SetPoint("BOTTOM", check, "BOTTOM", 0, 30)
-no:SetText("No, leave them")
+Atr_LT(no, "No, leave them")
 no:SetScript("OnClick", function() Atr_CheckActives_Frame:Hide() end)
 
 ---------------------------------------
@@ -136,18 +135,17 @@ no:SetScript("OnClick", function() Atr_CheckActives_Frame:Hide() end)
 local cancel = Atr_CreateLegacyDialog("Atr_CancelAuction_Confirm_Frame", 340, 115, 40, -390, "DIALOG")
 local cancelText = cancel:CreateFontString("Atr_CancelAuction_Confirm_Frame_text", "BACKGROUND", "GameFontNormal")
 cancelText:SetPoint("CENTER", cancel, "CENTER", 0, 10)
-cancelText:SetText("Really cancel?")
-
+Atr_LT(cancelText, "Really cancel?")
 local leave = CreateFrame("Button", nil, cancel, "UIPanelButtonTemplate")
 leave:SetWidth(60); leave:SetHeight(22)
 leave:SetPoint("BOTTOMRIGHT", cancel, "BOTTOMRIGHT", -50, 16)
-leave:SetText("Leave it")
+Atr_LT(leave, "Leave it")
 leave:SetScript("OnClick", function() Atr_CancelUndercut_Confirm(false) end)
 
 local doCancel = CreateFrame("Button", nil, cancel, "UIPanelButtonTemplate")
 doCancel:SetWidth(60); doCancel:SetHeight(22)
 doCancel:SetPoint("BOTTOMRIGHT", cancel, "BOTTOMRIGHT", -150, 16)
-doCancel:SetText("Cancel My Auction")
+Atr_LT(doCancel, "Cancel My Auction")
 doCancel:SetScript("OnClick", function() Atr_CancelUndercut_Confirm(true) end)
 end
 
@@ -201,7 +199,7 @@ header:SetPoint("TOP", f, "TOP", 0, 12)
 
 local function Font(parent, name, template, text, point, relative, relativePoint, x, y, width, height)
     local fs = parent:CreateFontString(name, "ARTWORK", template)
-    if text then fs:SetText(text) end
+    if text and text ~= "" then Atr_LT(fs, text) end
     if width then fs:SetWidth(width) end
     if height then fs:SetHeight(height) end
     fs:SetPoint(point, relative or parent, relativePoint or point, x or 0, y or 0)
@@ -222,13 +220,13 @@ Atr_FullScanStatus = Font(f, "Atr_FullScanStatus", "GameFontNormal", "", "TOPLEF
 local done = CreateFrame("Button", "Atr_FullScanDone", f, "UIPanelButtonTemplate")
 done:SetWidth(80); done:SetHeight(22)
 done:SetPoint("TOPRIGHT", f, "TOPRIGHT", -30, -140)
-done:SetText("DONE")
+Atr_LT(done, "DONE")
 done:SetScript("OnClick", function() Atr_FullScanFrame:Hide() end)
 
 local start = CreateFrame("Button", "Atr_FullScanStartButton", f, "UIPanelButtonTemplate")
 start:SetWidth(120); start:SetHeight(22)
 start:SetPoint("RIGHT", done, "LEFT", -4, 0)
-start:SetText("Start Scanning")
+Atr_LT(start, "Start Scanning")
 start:SetScript("OnClick", function() Atr_FullScanStart() end)
 
 ---------------------------------------
@@ -297,8 +295,7 @@ part1:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 40)
 local text1 = part1:CreateFontString("Atr_Buy_Confirm_Text1", "BACKGROUND", "GameFontNormal")
 Atr_Buy_Confirm_Text1 = text1
 text1:SetPoint("TOPLEFT", part1, "TOPLEFT", 70, -79)
-text1:SetText("Buy")
-
+Atr_LT(text1, "Buy")
 local maxText = part1:CreateFontString("Atr_Buy_Confirm_Max_Text", "BACKGROUND", "GameFontDarkGraySmall")
 Atr_Buy_Confirm_Max_Text = maxText
 maxText:SetPoint("TOPLEFT", part1, "TOPLEFT", 110, -97)
@@ -306,8 +303,7 @@ maxText:SetPoint("TOPLEFT", part1, "TOPLEFT", 110, -97)
 local text2 = part1:CreateFontString("Atr_Buy_Confirm_Text2", "BACKGROUND", "GameFontNormal")
 Atr_Buy_Confirm_Text2 = text2
 text2:SetPoint("TOPLEFT", part1, "TOPLEFT", 160, -79)
-text2:SetText("stacks for:")
-
+Atr_LT(text2, "stacks for:")
 local totalPrice = CreateFrame("Frame", "Atr_Buy_Confirm_TotalPrice", part1, "SmallMoneyFrameTemplate")
 Atr_Buy_Confirm_TotalPrice = totalPrice
 totalPrice:SetWidth(125)
@@ -344,7 +340,7 @@ Atr_Buy_Confirm_CancelBut = cancel
 cancel:SetWidth(80)
 cancel:SetHeight(22)
 cancel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -20, 25)
-cancel:SetText("CANCEL")
+Atr_LT(cancel, "CANCEL")
 cancel:SetScript("OnClick", function() Atr_Buy_Cancel() end)
 
 local okay = CreateFrame("Button", "Atr_Buy_Confirm_OKBut", frame, "UIPanelButtonTemplate")
@@ -352,7 +348,7 @@ Atr_Buy_Confirm_OKBut = okay
 okay:SetWidth(80)
 okay:SetHeight(22)
 okay:SetPoint("RIGHT", cancel, "LEFT", -10, 0)
-okay:SetText("Buy")
+Atr_LT(okay, "Buy")
 okay:SetScript("OnClick", function() Atr_Buy_Confirm_OK() end)
 end
 
@@ -408,59 +404,7 @@ local zc = addonTable.zc;
 
 -----------------------------------------
 
-AtrL = {};
-
------------------------------------------
-
-function Atr_PickLocalizationTable (locale)
-
-
-    if (type(locale) ~= "string" or locale == "") then
-        locale = AUCTIONATOR_LOCALE
-    end
-    if (type(locale) ~= "string" or locale == "") then
-        locale = GetLocale()
-    end
-    if (type(locale) ~= "string" or locale == "") then
-        locale = "enUS"
-    end
-
-	local f = getglobal ("AtrBuildLTable_"..locale);
-	if (type (f) == "function") then
-		f();
-	else
-		AtrBuildLTable_enUS();
-	end
-end
-
------------------------------------------
-
-local atrLocale = AUCTIONATOR_LOCALE
-if (not atrLocale or atrLocale == "") and AUCTIONATOR_SAVEDVARS then
-    atrLocale = AUCTIONATOR_SAVEDVARS.locale
-end
-if (not atrLocale or atrLocale == "") then
-    atrLocale = GetLocale()
-end
-Atr_PickLocalizationTable(atrLocale)
-
------------------------------------------
-
-function ZT (s)
-
-	if (s == nil or s == "") then
-		return s;
-	end
-	
-	if (AtrL) then
-		local s1 = AtrL[s];
-		if (s1 and s1 ~= "") then		
-			return s1;
-		end
-	end
-		
-	return s;
-end
+-- (language tables, ZT and the text registry live in Localization.lua)
 
 -----------------------------------------
 
@@ -788,29 +732,29 @@ function Atr_CreateMainPanelElements(parent)
     message2:SetTextColor(0.1, 1.0, 0.1)
 
     local recommend = parent:CreateFontString("Atr_Recommend_Text", "BACKGROUND", "GameFontNormal")
-    recommend:SetText("Recommended buyout price")
+    Atr_LT(recommend, "Recommended buyout price")
     recommend:SetPoint("TOPLEFT", parent, "TOPLEFT", 77, -98)
 
     local basis = parent:CreateFontString("Atr_Recommend_Basis_Text", "BACKGROUND", "GameFontHighlightSmall")
-    basis:SetText("based on")
+    Atr_LT(basis, "based on")
     basis:SetPoint("LEFT", recommend, "RIGHT", 20, -2)
 
     local perStack = parent:CreateFontString("Atr_RecommendPerStack_Text", "BACKGROUND", "GameFontHighlightSmall")
-    perStack:SetText("per stack")
+    Atr_LT(perStack, "per stack")
     perStack:SetPoint("TOPLEFT", recommend, "TOPLEFT", 152, -28)
 
     local perItem = parent:CreateFontString("Atr_RecommendPerItem_Text", "BACKGROUND", "GameFontHighlightSmall")
-    perItem:SetText("per item")
+    Atr_LT(perItem, "per item")
     perItem:SetPoint("TOPLEFT", recommend, "TOPLEFT", 152, -51)
 
     local close = CreateFrame("Button", "AuctionatorCloseButton", parent, "UIPanelButtonTemplate")
-    close:SetText("CLOSE")
+    Atr_LT(close, "CLOSE")
     close:SetWidth(80); close:SetHeight(22)
     close:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 66, 14)
     close:SetScript("OnClick", function(self) HideUIPanel(self:GetParent():GetParent()) end)
 
     local cancel = CreateFrame("Button", "Atr_CancelSelectionButton", parent, "UIPanelButtonTemplate")
-    cancel:SetText("Cancel Auctions")
+    Atr_LT(cancel, "Cancel Auctions")
     cancel:SetWidth(113); cancel:SetHeight(22)
     cancel:SetPoint("RIGHT", close, "LEFT", 2, 0)
     cancel:SetScript("OnClick", function() Atr_CancelSelection_OnClick() end)
@@ -819,7 +763,7 @@ function Atr_CreateMainPanelElements(parent)
     cancel:SetDisabledFontObject(GameFontDisableSmall)
 
     local buy = CreateFrame("Button", "Atr_Buy1_Button", parent, "UIPanelButtonTemplate")
-    buy:SetText("Buy")
+    Atr_LT(buy, "Buy")
     buy:SetWidth(90); buy:SetHeight(22)
     buy:SetPoint("RIGHT", cancel, "LEFT", 4, 0)
     buy:SetScript("OnClick", function() Atr_Buy1_Onclick_SellAware() end)
@@ -1014,14 +958,14 @@ function Atr_CreateSearchControls(parent)
     search:SetScript("OnShow", function(self) self:SetFocus() end)
 
     local searchButton = CreateFrame("Button", "Atr_Search_Button", parent, "UIPanelButtonTemplate")
-    searchButton:SetText("Search")
+    Atr_LT(searchButton, "Search")
     searchButton:SetWidth(80)
     searchButton:SetHeight(22)
     searchButton:SetPoint("LEFT", search, "RIGHT", 15, 0)
     searchButton:SetScript("OnClick", function() Atr_Search_Onclick() end)
 
     local optionsButton = CreateFrame("Button", "Auctionator1Button", parent, "UIPanelButtonTemplate")
-    optionsButton:SetText("Auctionator")
+    Atr_LT(optionsButton, "Auctionator")
     optionsButton:SetWidth(90)
     optionsButton:SetHeight(18)
     optionsButton:SetPoint("LEFT", searchButton, "RIGHT", 145, 0)
@@ -1031,7 +975,7 @@ function Atr_CreateSearchControls(parent)
     optionsButton:SetScript("OnClick", function() Atr_ShowOptions() end)
 
     local fullScanButton = CreateFrame("Button", "Atr_FullScanButton", parent, "UIPanelButtonTemplate")
-    fullScanButton:SetText("Full Scan...")
+    Atr_LT(fullScanButton, "Full Scan...")
     fullScanButton:SetWidth(74)
     fullScanButton:SetHeight(18)
     fullScanButton:SetPoint("RIGHT", optionsButton, "LEFT", -2, 0)
@@ -1085,24 +1029,24 @@ function Atr_CreateHeadingsBar(parent)
     middle:SetTexCoord(0.1953125, 0.8046875, 0, 1)
 
     local col1 = bar:CreateFontString("Atr_Col1_Heading", "ARTWORK", "GameFontHighlightSmall")
-    col1:SetText("Item Price")
+    Atr_LT(col1, "Item Price")
     col1:SetWidth(100)
     col1:SetJustifyH("CENTER")
     col1:SetPoint("LEFT", middle, "LEFT", 40, 1)
     col1:Hide()
 
     local col3 = bar:CreateFontString("Atr_Col3_Heading", "ARTWORK", "GameFontHighlightSmall")
-    col3:SetText("Current Auctions")
+    Atr_LT(col3, "Current Auctions")
     col3:SetPoint("LEFT", middle, "LEFT", 175, 1)
     col3:Hide()
 
     local col4 = bar:CreateFontString("Atr_Col4_Heading", "ARTWORK", "GameFontHighlightSmall")
-    col4:SetText("Total Price")
+    Atr_LT(col4, "Total Price")
     col4:SetPoint("LEFT", middle, "LEFT", 500, 1)
     col4:Hide()
 
     local back = CreateFrame("Button", "Atr_Back_Button", bar, "UIPanelButtonTemplate")
-    back:SetText("Back")
+    Atr_LT(back, "Back")
     back:SetWidth(70)
     back:SetHeight(18)
     back:SetPoint("TOPLEFT", bar, "TOPLEFT", 8, -5)
@@ -1113,7 +1057,7 @@ function Atr_CreateHeadingsBar(parent)
     back:Hide()
 
     local col1Button = Atr_CreateColumnHeadingButton("Atr_Col1_Heading_Button", bar)
-    col1Button:SetText("Lowest Price")
+    Atr_LT(col1Button, "Lowest Price")
     col1Button:SetWidth(100)
     col1Button:SetHeight(20)
     col1Button:SetPoint("TOPLEFT", bar, "TOPLEFT", 46, -21)
@@ -1121,7 +1065,7 @@ function Atr_CreateHeadingsBar(parent)
     col1Button:Hide()
 
     local col3Button = Atr_CreateColumnHeadingButton("Atr_Col3_Heading_Button", bar)
-    col3Button:SetText("Item Name")
+    Atr_LT(col3Button, "Item Name")
     col3Button:SetWidth(108)
     col3Button:SetHeight(20)
     col3Button:SetPoint("TOPLEFT", bar, "TOPLEFT", 172, -21)
@@ -1138,7 +1082,7 @@ do
 
 local function AtrSellFont(parent, name, template, text, x, y, width, height, justify)
     local fs = parent:CreateFontString(name, "ARTWORK", template)
-    if text then fs:SetText(text) end
+    if text and text ~= "" then Atr_LT(fs, text) end
     if width or height then fs:SetSize(width or 0, height or 0) end
     fs:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
     if justify then fs:SetJustifyH(justify) end
@@ -1223,7 +1167,7 @@ function Atr_CreateSellPanel(parent)
     Atr_CreateAuctionButton = CreateFrame("Button", "Atr_CreateAuctionButton", panel, "UIPanelButtonTemplate")
     Atr_CreateAuctionButton:SetSize(185, 30)
     Atr_CreateAuctionButton:SetPoint("TOPLEFT", panel, "TOPLEFT", 3, -170)
-    Atr_CreateAuctionButton:SetText("Create Auction")
+    Atr_LT(Atr_CreateAuctionButton, "Create Auction")
     Atr_CreateAuctionButton:Disable()
     Atr_CreateAuctionButton:SetScript("OnClick", function() Atr_CreateAuction_OnClick() end)
 

@@ -66,18 +66,18 @@ function Atr_Check_For_Conflicts (addonName)
 	if (zc.StringSame (addonName, "recipeknown") and RecipeKnown_EventScan) then
 		Atr_orig_RecipeKnown_EventScan = RecipeKnown_EventScan;
 		RecipeKnown_EventScan = Atr_RecipeKnown_EventScan
-		zc.msg_yellow ("Auctionator is patching RecipeKnown to prevent a known conflict.");
+		zc.msg_yellow (string.format (ZT("Auctionator is patching %s to prevent a known conflict."), "RecipeKnown"));
 	end
 
 	if (zc.StringContains (addonName, "lootlink") and LootLink_OnEvent) then
 		Atr_orig_LootLink_OnEvent = LootLink_OnEvent;
 		LootLink_OnEvent = Atr_LootLink_OnEvent
-		zc.msg_yellow ("Auctionator is patching LootLink to prevent a known conflict.");
+		zc.msg_yellow (string.format (ZT("Auctionator is patching %s to prevent a known conflict."), "LootLink"));
 	end
 
 	if (zc.StringContains (addonName, "wowecon") and WOWEcon_Scan_AH) then
 		Atr_orig_WOWEcon_Scan_AH = WOWEcon_Scan_AH;
 		WOWEcon_Scan_AH = Atr_WOWEcon_Scan_AH
-		zc.msg_yellow ("Auctionator is patching WowEcon to prevent a known conflict.");
+		zc.msg_yellow (string.format (ZT("Auctionator is patching %s to prevent a known conflict."), "WowEcon"));
 	end
 end
