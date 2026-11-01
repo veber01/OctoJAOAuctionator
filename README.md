@@ -1,4 +1,4 @@
-# Octo - Just another Auctionator 1.0.0
+# Octo - Just another Auctionator 1.1.4
 
 Tweaked fork of OctoAuctionator.
 
@@ -14,7 +14,7 @@ Make sure to disable any other Auction addons to prevent conflicts.
 
 ## Install
 
-1. Download **OctoJAOAuctionator-1.0.0.zip** from releases.
+1. Download **OctoJAOAuctionator-1.1.4.zip** from releases.
 2. Extract it into your WoW `Interface/AddOns` folder.
 3. Restart WoW and enable the addon.
 
