@@ -127,6 +127,54 @@ end
 
 -----------------------------------------
 
+local function Atr_SaveScannedItemMetadata (name, texture, itemLink, quality)
+    if (type(name) ~= "string" or name == "") then return; end
+
+    if (type(AUCTIONATOR_SEARCH_METADATA) ~= "table") then
+        AUCTIONATOR_SEARCH_METADATA = {};
+    end
+
+    local metadata = AUCTIONATOR_SEARCH_METADATA[name];
+    if (type(metadata) ~= "table") then
+        metadata = {};
+        AUCTIONATOR_SEARCH_METADATA[name] = metadata;
+    end
+
+    if (type(quality) == "number" and quality >= 0 and quality <= 6) then
+        metadata.quality = quality;
+    end
+
+    if (type(texture) == "string" and texture ~= "") then
+        metadata.texture = texture;
+    end
+
+    local itemId;
+    if (Atr_ItemIdFromAnything) then
+        itemId = Atr_ItemIdFromAnything (itemLink);
+    end
+    if (not itemId and itemLink) then
+        local _, _, idText = string.find (itemLink, "item:(%d+)");
+        itemId = tonumber (idText);
+    end
+    if (not itemId) then
+        itemId = tonumber (metadata.id);
+    end
+    if (not itemId or itemId <= 0) then return; end
+
+    metadata.id = itemId;
+
+    if (Atr_GetItemInfo and (not metadata.category or not metadata.subcategory or not metadata.texture)) then
+        local _, _, _, _, _, category, subcategory, _, _, itemTexture = Atr_GetItemInfo (itemId);
+        if (category and category ~= "") then metadata.category = category; end
+        if (subcategory and subcategory ~= "") then metadata.subcategory = subcategory; end
+        if (not metadata.texture and type(itemTexture) == "string" and itemTexture ~= "") then
+            metadata.texture = itemTexture;
+        end
+    end
+end
+
+-----------------------------------------
+
 function AtrScan:Init (itemName)
 	self.itemName			= itemName;
 	self.itemLink			= nil;
@@ -324,6 +372,10 @@ function AtrSearch:AnalyzeResultsPage()
 				if (scn.itemLink == nil or self.itemClass == nil) then
 					scn:UpdateItemLink (GetAuctionItemLink("list", x));
 				end
+
+                -- Save the live auction icon and item ID for offline search.
+                local itemLink = GetAuctionItemLink ("list", x);
+                Atr_SaveScannedItemMetadata (name, texture, itemLink or scn.itemLink, quality);
 
 				if (self.callback) then
 					self.callback (x, numBatchAuctions, count, buyoutPrice, owner);
@@ -529,6 +581,17 @@ function AtrSearch:Finish()
 		if (newprice > 0) then
 			if (scn.itemQuality + 1 >= AUCTIONATOR_SCAN_MINLEVEL) then
 				gAtr_ScanDB[scn.itemName] = newprice;
+				if (type(AUCTIONATOR_SEARCH_METADATA) ~= "table") then AUCTIONATOR_SEARCH_METADATA = {}; end
+				local itemId = AtrNS and AtrNS.zc and AtrNS.zc.ItemIDfromLink and AtrNS.zc.ItemIDfromLink (scn.itemLink);
+				if (itemId and tonumber (itemId) and tonumber (itemId) > 0) then
+					if (type(AUCTIONATOR_SEARCH_METADATA[scn.itemName]) ~= "table") then AUCTIONATOR_SEARCH_METADATA[scn.itemName] = {}; end
+					AUCTIONATOR_SEARCH_METADATA[scn.itemName].id = tonumber (itemId);
+                    local _, _, _, _, _, itemType, itemSubType, _, _, texture = Atr_GetItemInfo (tonumber(itemId));
+                    local metadata = AUCTIONATOR_SEARCH_METADATA[scn.itemName];
+                    if (itemType) then metadata.category = itemType; end
+                    if (itemSubType) then metadata.subcategory = itemSubType; end
+                    if (texture) then metadata.texture = texture; end
+				end
 			end
 		end
 	end
@@ -1034,6 +1097,13 @@ function Atr_FullScanAnalyze()
 
 		if (name ~= nil and name ~= "") then
 
+            local metadata = AUCTIONATOR_SEARCH_METADATA and AUCTIONATOR_SEARCH_METADATA[name];
+            local itemLink;
+            if (type(metadata) ~= "table" or not metadata.id) then
+                itemLink = GetAuctionItemLink ("list", x);
+            end
+            Atr_SaveScannedItemMetadata (name, texture, itemLink, quality);
+
 			gFS_qualities[name] = quality;
 
 			if (buyoutPrice ~= nil and count ~= nil and count > 0) then
@@ -1105,6 +1175,18 @@ function Atr_FullScanFinish()
 				end
 
 				gAtr_ScanDB[name] = newprice;
+				if (type(AUCTIONATOR_SEARCH_METADATA) ~= "table") then AUCTIONATOR_SEARCH_METADATA = {}; end
+				local itemLink = Atr_GetItemLink and Atr_GetItemLink (name);
+				local itemId = AtrNS and AtrNS.zc and AtrNS.zc.ItemIDfromLink and AtrNS.zc.ItemIDfromLink (itemLink);
+				if (itemId and tonumber (itemId) and tonumber (itemId) > 0) then
+					if (type(AUCTIONATOR_SEARCH_METADATA[name]) ~= "table") then AUCTIONATOR_SEARCH_METADATA[name] = {}; end
+					AUCTIONATOR_SEARCH_METADATA[name].id = tonumber (itemId);
+                    local _, _, _, _, _, itemType, itemSubType, _, _, texture = Atr_GetItemInfo (tonumber(itemId));
+                    local metadata = AUCTIONATOR_SEARCH_METADATA[name];
+                    if (itemType) then metadata.category = itemType; end
+                    if (itemSubType) then metadata.subcategory = itemSubType; end
+                    if (texture) then metadata.texture = texture; end
+				end
 			end
 		end
 	end

@@ -404,10 +404,6 @@ local zc = addonTable.zc;
 
 -----------------------------------------
 
--- (language tables, ZT and the text registry live in Localization.lua)
-
------------------------------------------
-
 function zc.IsEnglishLocale()
 
 	return (GetLocale() == "enUS" or GetLocale() == "enGB");

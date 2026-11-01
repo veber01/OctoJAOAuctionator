@@ -498,6 +498,32 @@ local function Apply()
 end
 
 -----------------------------------------
+-- price database window (can be opened outside the auction house, so it initialises pfUI by itself)
+-----------------------------------------
+
+function Atr_SkinPriceWindow(f)
+
+	if not Ready() or not f or f.atrPfui then return end
+	f.atrPfui = true
+
+	P = pfUI.api
+	cr, cg, cb = ClassColor()
+	local raw, b = P.GetBorderSize()
+	border = b
+	bpad = raw > 1 and b - P.GetPerfectPixel() or P.GetPerfectPixel()
+
+	Try("price window", function()
+		SkinWindow(f, .92, true)
+		SkinEdit("Atr_PriceSearch")
+		SkinScroll("Atr_PriceScroll")
+		local i
+		for i = 1, 15 do SkinListRow(Get("Atr_PriceRow" .. i)) end
+		local close = Get("Atr_PriceWindowClose")
+		if close and P.SkinCloseButton then P.SkinCloseButton(close, f.backdrop, -6, -6) end
+	end)
+end
+
+-----------------------------------------
 -- driver
 -----------------------------------------
 

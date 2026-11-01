@@ -52,7 +52,7 @@ local function Atr_WOWEcon_Scan_AH ()
 	end
 
 	local numBatchAuctions = GetNumAuctionItems("list");
-	if (numBatchAuctions > 50) then		-- full scan
+	if (numBatchAuctions > 50) then
 		return;
 	end
 

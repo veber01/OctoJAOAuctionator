@@ -243,6 +243,19 @@ function AtrBuildLTable_esES ()
 	AtrL["Language"] = "Idioma"
 	AtrL["English (US)"] = "Inglés (EE. UU.)"
 	AtrL["Hungarian"] = "Húngaro"
+	AtrL["Price Database"] = "Base de datos de precios"
+	AtrL["Auction price"] = "Precio de subasta"
+	AtrL["Your last posting"] = "Tu última publicación"
+	AtrL["Showing:"] = "Mostrando:"
+	AtrL["Auction price:"] = "Precio de subasta:"
+	AtrL["Your last posting:"] = "Tu última publicación:"
+	AtrL["Vendor price:"] = "Precio de vendedor:"
+	AtrL["Disenchant value:"] = "Valor de desencantamiento:"
+	AtrL["Your posting history (per item):"] = "Tu historial de publicaciones (por objeto):"
+	AtrL["No matching items"] = "No hay objetos que coincidan"
+	AtrL["The price database is empty.\nRun a full scan at the auction house first."] = "La base de datos de precios está vacía.\nRealiza antes un escaneo completo en la casa de subastas."
+	AtrL["Click an item to see its details"] = "Haz clic en un objeto para ver sus detalles"
+	AtrL["Item details are not available (item not known to the game client yet)"] = "Detalles del objeto no disponibles (el cliente del juego aún no lo conoce)"
 end
 
 -- Latin American Spanish clients use the same table

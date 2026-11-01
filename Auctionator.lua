@@ -360,6 +360,10 @@ local function Atr_SlashCmdFunction(msg)
 			end
 		end
 	
+	elseif (cmd == "prices" or cmd == "price" or cmd == "db") then
+		local rest = string.gsub (msg, "^%s*%S+%s*", "");
+		Atr_ShowPriceWindow (rest);
+
 	elseif (cmd == "locale") then
 		Atr_PickLocalizationTable (param1u);
 

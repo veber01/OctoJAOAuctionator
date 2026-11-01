@@ -19,7 +19,6 @@ end)
 
 -----------------------------------------
 
--- Atr_OptionsPanelTemplate
 local function CreatePanel(name, key, titleKey, subtitleKey)
 
 	local f = CreateFrame("Frame", name, UIParent)
@@ -365,7 +364,7 @@ end
 -----------------------------------------
 
 do
-	local f = CreatePanel("AuctionatorDescriptionFrame", "About", "About    OctoJAOAuctionator")
+	local f = CreatePanel("AuctionatorDescriptionFrame", "About", "About OctoJAOAuctionator")
 
 	local author = f:CreateFontString(nil, "BACKGROUND", "GameFontDisableSmall")
 	author:SetJustifyH("LEFT"); author:SetJustifyV("TOP")
