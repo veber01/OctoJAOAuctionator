@@ -1164,10 +1164,10 @@ end
 function auctionator_ChatFrame_OnEvent(event)
 
 	if (event == "CHAT_MSG_SYSTEM") then
-		if (arg1 == ERR_AUCTION_STARTED) then		-- absorb the Auction Created message
+		if (arg1 == ERR_AUCTION_STARTED) then
 			return;
 		end
-		if (arg1 == ERR_AUCTION_REMOVED) then		-- absorb the Auction Cancelled message
+		if (arg1 == ERR_AUCTION_REMOVED) then
 			return;
 		end
 	end
@@ -2152,7 +2152,7 @@ function Atr_Idle(self, elapsed)
 		return;
 	end
 
-	if (gCurrentPane and gCurrentPane.activeSearch and gCurrentPane.activeSearch.processing_state == KM_PREQUERY and not Atr_Buy_IsBusy()) then		------- check whether to send a new auction query to get the next page -------
+	if (gCurrentPane and gCurrentPane.activeSearch and gCurrentPane.activeSearch.processing_state == KM_PREQUERY and not Atr_Buy_IsBusy()) then
 		gCurrentPane.activeSearch:Continue();
 	end
 
@@ -2404,7 +2404,7 @@ function Atr_UpdateUI_SellPane (needsUpdate)
 			gCurrentPane.currIndex = gCurrentPane.activeScan:FindInSortedData (gJustPosted_StackSize, gJustPosted_BuyoutPrice);
 
 			if (gCurrentPane:ShowCurrent()) then
-				Atr_HighlightEntry (gCurrentPane.currIndex);		-- highlight the newly created auction(s)
+				Atr_HighlightEntry (gCurrentPane.currIndex);
 			else
 				Atr_HighlightEntry (gCurrentPane.histIndex);
 			end
@@ -2460,7 +2460,7 @@ function Atr_BuildActiveAuctions ()
 			break;
 		end
 
-		if (count > 0) then		-- count is 0 for sold items
+		if (count > 0) then
 			if (gActiveAuctions[name] == nil) then
 				gActiveAuctions[name] = 1;
 			else
@@ -3807,7 +3807,7 @@ end
 
 function Atr_CheckingActive_Finish()
 
-	gAtr_CheckingActive_State = ATR_CACT_NULL;		-- done
+	gAtr_CheckingActive_State = ATR_CACT_NULL;
 	
 	Atr_CheckActiveButton:SetText(ZT("Check for Undercuts"));
 
@@ -4086,7 +4086,7 @@ function Atr_CalcStartPrice (buyoutPrice)
 
 	local newStartPrice = Atr_CalcUndercutPrice(math.floor(buyoutPrice * discount));
 	
-	if (AUCTIONATOR_SAVEDVARS.STARTING_DISCOUNT == 0) then		-- zero means zero
+	if (AUCTIONATOR_SAVEDVARS.STARTING_DISCOUNT == 0) then
 		newStartPrice = buyoutPrice;
 	end
 	

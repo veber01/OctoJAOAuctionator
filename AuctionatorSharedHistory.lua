@@ -1,5 +1,3 @@
--- Generated from OctoJAOAuctionator SavedVariables; shareable read-only price history.
--- Replace Interface/AddOns/OctoJAOAuctionator/AuctionatorSharedHistory.lua while WoW is CLOSED.
 AtrMarketSharedData = {
     schema = 1,
     realm = "N'Zoth",

@@ -310,7 +310,7 @@ function AtrSearch:CheckForDuplicatePage ()
 	local isDup = self.query:CheckForDuplicatePage(self.current_page);
 
 	if (isDup) then
-		self.current_page	= self.current_page - 1;   -- requery the page
+		self.current_page	= self.current_page - 1;
 		
 		self.processing_state = KM_PREQUERY;
 	end
@@ -364,7 +364,6 @@ function AtrSearch:AnalyzeResultsPage()
 
 				scn:AddScanItem (name, count, buyoutPrice, owner, 1, curpage);
 				
-				-- Reuse the auction link for both scan data and offline metadata.
 				local itemLink = GetAuctionItemLink ("list", x);
 				if (scn.itemLink == nil or self.itemClass == nil) then
 					scn:UpdateItemLink (itemLink);
@@ -576,7 +575,6 @@ function AtrSearch:Finish()
 			if (scn.itemQuality + 1 >= AUCTIONATOR_SCAN_MINLEVEL) then
 				local priorMarketPrice = gAtr_ScanDB[scn.itemName];
 				gAtr_ScanDB[scn.itemName] = newprice;
-				-- Market history records the observed lowest buyout after a completed scan.
 				if (AtrMarket and AtrMarket.RecordScan and scn.lowprices and scn.lowprices[1]) then
 					AtrMarket.RecordScan (scn.itemName, scn.lowprices[1], finishTime, priorMarketPrice);
 				end
@@ -711,7 +709,7 @@ function AtrScan:CondenseAndSort ()
 	for i,sd in ipairs (self.scanData) do
 
 		local ownerCode = "x";
-		local dataType  = "n";		-- normal
+		local dataType  = "n";
 		
 		if (sd.owner == UnitName("player")) then
 			ownerCode = "y";
