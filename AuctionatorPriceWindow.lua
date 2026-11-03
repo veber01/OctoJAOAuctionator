@@ -879,6 +879,15 @@ local function CreateWindow ()
 	local close = CreateFrame ("Button", "Atr_PriceWindowClose", win, "UIPanelCloseButton");
 	close:SetPoint ("TOPRIGHT", win, "TOPRIGHT", -6, -6);
 
+    local marketButton = CreateFrame ("Button", "Atr_PriceMarketButton", win, "UIPanelButtonTemplate");
+    marketButton:SetWidth (142);
+    marketButton:SetHeight (22);
+    marketButton:SetPoint ("TOPLEFT", win, "TOPLEFT", 578, -44);
+    marketButton:SetText ("Market Analysis");
+    marketButton:SetScript ("OnClick", function()
+        if (Atr_ShowMarketWindow) then Atr_ShowMarketWindow (selected); end
+    end);
+
 	local label = win:CreateFontString (nil, "ARTWORK", "GameFontNormal");
 	label:SetPoint ("TOPLEFT", win, "TOPLEFT", RESULTS_X + 4, -46);
 	Atr_LT (label, "Search");

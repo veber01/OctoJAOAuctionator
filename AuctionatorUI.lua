@@ -537,8 +537,6 @@ local gItemSubClasses;
 
 -----------------------------------------
 
-function Atr_IsWeaponType				(itemType)		return (Atr_ItemType2AuctionClass (itemType) == 1);		end
-function Atr_IsArmorType				(itemType)		return (Atr_ItemType2AuctionClass (itemType) == 2);		end
 
 -----------------------------------------
 
@@ -743,6 +741,37 @@ function Atr_CreateMainPanelElements(parent)
     Atr_LT(perItem, "per item")
     perItem:SetPoint("TOPLEFT", recommend, "TOPLEFT", 152, -51)
 
+    Atr_SellMarketAverage = parent:CreateFontString("Atr_SellMarketAverage", "OVERLAY", "GameFontHighlightSmall")
+    Atr_SellMarketAverage:SetPoint("TOPLEFT", parent, "TOPLEFT", 310, -124)
+    Atr_SellMarketAverage:SetWidth(230)
+    Atr_SellMarketAverage:SetHeight(17)
+    Atr_SellMarketAverage:SetJustifyH("LEFT")
+    Atr_SellMarketAverage:Hide()
+
+    Atr_SellMarketHistory = parent:CreateFontString("Atr_SellMarketHistory", "OVERLAY", "GameFontHighlightSmall")
+    Atr_SellMarketHistory:SetPoint("TOPLEFT", parent, "TOPLEFT", 310, -147)
+    Atr_SellMarketHistory:SetWidth(230)
+    Atr_SellMarketHistory:SetHeight(17)
+    Atr_SellMarketHistory:SetJustifyH("LEFT")
+    Atr_SellMarketHistory:Hide()
+
+    Atr_SellMarketHistoryButton = CreateFrame("Button", "Atr_SellMarketHistoryButton", parent, "UIPanelButtonTemplate")
+    Atr_SellMarketHistoryButton:SetWidth(66)
+    Atr_SellMarketHistoryButton:SetHeight(19)
+
+    Atr_SellMarketHistoryButton:SetPoint("TOPLEFT", parent, "TOPLEFT", 513, -128)
+    Atr_SellMarketHistoryButton:SetFrameStrata("HIGH")
+    Atr_SellMarketHistoryButton:SetFrameLevel(parent:GetFrameLevel() + 50)
+    Atr_SellMarketHistoryButton:EnableMouse(true)
+    Atr_SellMarketHistoryButton:SetText("History")
+    Atr_SellMarketHistoryButton:SetScript("OnClick", function()
+        local itemName = GetAuctionSellItemInfo()
+        if itemName and itemName ~= "" and Atr_ShowMarketWindow then
+            Atr_ShowMarketWindow(itemName)
+        end
+    end)
+    Atr_SellMarketHistoryButton:Hide()
+
     local close = CreateFrame("Button", "AuctionatorCloseButton", parent, "UIPanelButtonTemplate")
     Atr_LT(close, "CLOSE")
     close:SetWidth(80); close:SetHeight(22)
@@ -884,18 +913,24 @@ local function Atr_CreateResultRow(index)
     this = oldThis
 
     local textArea = CreateFrame("Frame", name .. "_TextArea", row)
-    textArea:SetWidth(240); textArea:SetHeight(16)
+    textArea:SetWidth(210); textArea:SetHeight(16)
     textArea:SetPoint("LEFT", row, "LEFT", 167, 0)
     local entryText = textArea:CreateFontString(name .. "_EntryText", "BACKGROUND", "GameFontHighlightSmall")
     entryText:SetJustifyH("LEFT")
     entryText:SetAllPoints(textArea)
 
     local stackArea = CreateFrame("Frame", name .. "_StackArea", row)
-    stackArea:SetWidth(120); stackArea:SetHeight(16)
-    stackArea:SetPoint("LEFT", row, "LEFT", 440, 0)
+    stackArea:SetWidth(112); stackArea:SetHeight(16)
+    stackArea:SetPoint("LEFT", row, "LEFT", 386, 0)
     local stackText = stackArea:CreateFontString(name .. "_StackPrice", "BACKGROUND", "GameFontHighlightSmall")
     stackText:SetJustifyH("RIGHT")
     stackText:SetAllPoints(stackArea)
+
+    local bargain = row:CreateFontString(name .. "_BargainPercent", "ARTWORK", "GameFontHighlightSmall")
+    bargain:SetWidth(72); bargain:SetHeight(16)
+    bargain:SetPoint("LEFT", row, "LEFT", 505, 0)
+    bargain:SetJustifyH("RIGHT")
+    bargain:Hide()
 
     local highlight = row:CreateTexture(nil, "HIGHLIGHT")
     highlight:SetTexture("Interface\\HelpFrame\\HelpFrameButton-Highlight")
@@ -1038,8 +1073,13 @@ function Atr_CreateHeadingsBar(parent)
 
     local col4 = bar:CreateFontString("Atr_Col4_Heading", "ARTWORK", "GameFontHighlightSmall")
     Atr_LT(col4, "Total Price")
-    col4:SetPoint("LEFT", middle, "LEFT", 500, 1)
+    col4:SetPoint("LEFT", middle, "LEFT", 404, 1)
     col4:Hide()
+
+    local bargainHeading = bar:CreateFontString("Atr_BargainHeading", "ARTWORK", "GameFontHighlightSmall")
+    bargainHeading:SetText("Bargain %")
+    bargainHeading:SetPoint("LEFT", middle, "LEFT", 520, 1)
+    bargainHeading:Hide()
 
     local back = CreateFrame("Button", "Atr_Back_Button", bar, "UIPanelButtonTemplate")
     Atr_LT(back, "Back")

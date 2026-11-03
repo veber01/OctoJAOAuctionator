@@ -341,7 +341,6 @@ function AtrSearch:AnalyzeResultsPage()
 		Atr_SetMessage (string.format (ZT("Scanning auctions: page %d"), self.current_page).." / "..self.totalPages);
 	end
 
-	local numNilOwners = 0;
 
 	if (numBatchAuctions > 0) then
 
@@ -350,10 +349,6 @@ function AtrSearch:AnalyzeResultsPage()
 		for x = 1, numBatchAuctions do
 
 			local name, texture, count, quality, canUse, level, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner = GetAuctionItemInfo("list", x);
-
-			if (owner == nil) then
-				numNilOwners = numNilOwners + 1;
-			end
 			
 			local exactMatch = zc.StringSame (name, self.searchText);
 
@@ -369,13 +364,12 @@ function AtrSearch:AnalyzeResultsPage()
 
 				scn:AddScanItem (name, count, buyoutPrice, owner, 1, curpage);
 				
+				-- Reuse the auction link for both scan data and offline metadata.
+				local itemLink = GetAuctionItemLink ("list", x);
 				if (scn.itemLink == nil or self.itemClass == nil) then
-					scn:UpdateItemLink (GetAuctionItemLink("list", x));
+					scn:UpdateItemLink (itemLink);
 				end
-
-                -- Save the live auction icon and item ID for offline search.
-                local itemLink = GetAuctionItemLink ("list", x);
-                Atr_SaveScannedItemMetadata (name, texture, itemLink or scn.itemLink, quality);
+				Atr_SaveScannedItemMetadata (name, texture, itemLink or scn.itemLink, quality);
 
 				if (self.callback) then
 					self.callback (x, numBatchAuctions, count, buyoutPrice, owner);
@@ -580,7 +574,12 @@ function AtrSearch:Finish()
 		
 		if (newprice > 0) then
 			if (scn.itemQuality + 1 >= AUCTIONATOR_SCAN_MINLEVEL) then
+				local priorMarketPrice = gAtr_ScanDB[scn.itemName];
 				gAtr_ScanDB[scn.itemName] = newprice;
+				-- Market history records the observed lowest buyout after a completed scan.
+				if (AtrMarket and AtrMarket.RecordScan and scn.lowprices and scn.lowprices[1]) then
+					AtrMarket.RecordScan (scn.itemName, scn.lowprices[1], finishTime, priorMarketPrice);
+				end
 				if (type(AUCTIONATOR_SEARCH_METADATA) ~= "table") then AUCTIONATOR_SEARCH_METADATA = {}; end
 				local itemId = AtrNS and AtrNS.zc and AtrNS.zc.ItemIDfromLink and AtrNS.zc.ItemIDfromLink (scn.itemLink);
 				if (itemId and tonumber (itemId) and tonumber (itemId) > 0) then
@@ -596,7 +595,6 @@ function AtrSearch:Finish()
 		end
 	end
 	
-	Atr_ClearBrowseListings();
 	gSortScansBy = self.sortHow;
 	table.sort (self.sortedScans, Atr_SortScans);
 end
@@ -688,12 +686,6 @@ function AtrSearch:UpdateArrows()
 		Atr_Col3_Heading_ButtonArrow:Show();
 		Atr_Col3_Heading_ButtonArrow:SetTexCoord(0, 0.5625, 1.0, 0);
 	end
-end
-
------------------------------------------
-
-function Atr_ClearBrowseListings()
-
 end
 
 -----------------------------------------
@@ -828,7 +820,7 @@ end
 function AtrScan:FindInSortedData (stackSize, buyoutPrice)
 	local j = 1;
 	for j = 1,getn(self.sortedData) do
-		sd = self.sortedData[j];
+		local sd = self.sortedData[j];
 		if (sd.stackSize == stackSize and sd.buyoutPrice == buyoutPrice and sd.yours) then
 			return j;
 		end
@@ -1174,7 +1166,11 @@ function Atr_FullScanFinish()
 					gNumUpdated = gNumUpdated + 1;
 				end
 
+				local priorMarketPrice = gAtr_ScanDB[name];
 				gAtr_ScanDB[name] = newprice;
+				if (AtrMarket and AtrMarket.RecordScan and prices and prices[1]) then
+					AtrMarket.RecordScan (name, prices[1], time(), priorMarketPrice);
+				end
 				if (type(AUCTIONATOR_SEARCH_METADATA) ~= "table") then AUCTIONATOR_SEARCH_METADATA = {}; end
 				local itemLink = Atr_GetItemLink and Atr_GetItemLink (name);
 				local itemId = AtrNS and AtrNS.zc and AtrNS.zc.ItemIDfromLink and AtrNS.zc.ItemIDfromLink (itemLink);

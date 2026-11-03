@@ -358,7 +358,7 @@ local function SkinMain()
 	local buttons = { "Atr_Search_Button", "Auctionator1Button", "Atr_FullScanButton", "Atr_CheckActiveButton",
 		"Atr_CancelAllUndercutsButton", "Atr_AddToSListButton", "Atr_RemFromSListButton", "Atr_DelSListButton",
 		"Atr_NewSListButton", "Atr_CreateAuctionButton", "AuctionatorCloseButton", "Atr_CancelSelectionButton",
-		"Atr_Buy1_Button" }
+		"Atr_Buy1_Button", "Atr_SellMarketHistoryButton" }
 	for _, name in ipairs(buttons) do SkinBtn(name) end
 
 	Try("button row", function()
@@ -498,7 +498,7 @@ local function Apply()
 end
 
 -----------------------------------------
--- price database window (can be opened outside the auction house, so it initialises pfUI by itself)
+-- price database
 -----------------------------------------
 
 function Atr_SkinPriceWindow(f)
@@ -515,12 +515,53 @@ function Atr_SkinPriceWindow(f)
 	Try("price window", function()
 		SkinWindow(f, .92, true)
 		SkinEdit("Atr_PriceSearch")
+		SkinBtn("Atr_PriceMarketButton")
 		SkinScroll("Atr_PriceScroll")
 		local i
 		for i = 1, 15 do SkinListRow(Get("Atr_PriceRow" .. i)) end
 		local close = Get("Atr_PriceWindowClose")
 		if close and P.SkinCloseButton then P.SkinCloseButton(close, f.backdrop, -6, -6) end
 	end)
+end
+
+-----------------------------------------
+-- market analysis
+-----------------------------------------
+
+function Atr_SkinMarketWindow(f, buttons, close, edits, rows, chartBars)
+    if not Ready() or not f or f.atrPfui then return end
+
+    P = pfUI.api
+    cr, cg, cb = ClassColor()
+
+    local ok, err = pcall(function()
+        P.CreateBackdrop(f, nil, true, .92)
+    end)
+    if not ok then
+        Report("market window", err)
+        return
+    end
+
+    f.atrPfui = true
+    if close and P.SkinCloseButton then
+        Try("market close", function() P.SkinCloseButton(close, f, -8, -8) end)
+    end
+
+    local i
+    for i = 1, getn(buttons or {}) do SkinBtn(buttons[i]) end
+    for i = 1, getn(edits or {}) do SkinEdit(edits[i]) end
+
+    SkinScroll("Atr_MarketListScroll")
+    for i = 1, getn(rows or {}) do
+        SkinListRow(rows[i])
+        if rows[i].bg then rows[i].bg:SetTexture(cr, cg, cb, .23) end
+    end
+
+    for i = 1, getn(chartBars or {}) do
+        if chartBars[i].atrChartTexture then
+            chartBars[i].atrChartTexture:SetTexture(cr, cg, cb, .9)
+        end
+    end
 end
 
 -----------------------------------------

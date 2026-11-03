@@ -128,29 +128,23 @@ function Atr_SetupTooltipsOptionsFrame ()
 
 	ATR_tipsVendorOpt_CB:SetChecked		(zc.NumToBool(AUCTIONATOR_V_TIPS));
 	ATR_tipsAuctionOpt_CB:SetChecked	(zc.NumToBool(AUCTIONATOR_A_TIPS));
-	ATR_tipsDisenchantOpt_CB:SetChecked	(zc.NumToBool(AUCTIONATOR_D_TIPS));
 
 	UIDropDownMenu_Initialize(Atr_tipsShiftDD, Atr_tipsShiftDD_Initialize);
 	UIDropDownMenu_SetSelectedValue(Atr_tipsShiftDD, AUCTIONATOR_SHIFT_TIPS);
-	
-	UIDropDownMenu_Initialize(Atr_deDetailsDD, Atr_deDetailsDD_Initialize);
-	UIDropDownMenu_SetSelectedValue(Atr_deDetailsDD, AUCTIONATOR_DE_DETAILS_TIPS);
 end
 
 -----------------------------------------
 
 function Atr_TooltipsOptionsFrame_Save()
 
-	local origValues = zc.msg_str (AUCTIONATOR_V_TIPS, AUCTIONATOR_A_TIPS, AUCTIONATOR_D_TIPS, AUCTIONATOR_SHIFT_TIPS, AUCTIONATOR_DE_DETAILS_TIPS);
+	local origValues = zc.msg_str (AUCTIONATOR_V_TIPS, AUCTIONATOR_A_TIPS, AUCTIONATOR_SHIFT_TIPS);
 
 	AUCTIONATOR_V_TIPS		= zc.BoolToNum(ATR_tipsVendorOpt_CB:GetChecked ());
 	AUCTIONATOR_A_TIPS		= zc.BoolToNum(ATR_tipsAuctionOpt_CB:GetChecked ());
-	AUCTIONATOR_D_TIPS		= zc.BoolToNum(ATR_tipsDisenchantOpt_CB:GetChecked ());
 
 	AUCTIONATOR_SHIFT_TIPS		= UIDropDownMenu_GetSelectedValue(Atr_tipsShiftDD);
-	AUCTIONATOR_DE_DETAILS_TIPS	= UIDropDownMenu_GetSelectedValue(Atr_deDetailsDD);
 
-	local newValues = zc.msg_str (AUCTIONATOR_V_TIPS, AUCTIONATOR_A_TIPS, AUCTIONATOR_D_TIPS, AUCTIONATOR_SHIFT_TIPS, AUCTIONATOR_DE_DETAILS_TIPS);
+	local newValues = zc.msg_str (AUCTIONATOR_V_TIPS, AUCTIONATOR_A_TIPS, AUCTIONATOR_SHIFT_TIPS);
 
 	if (origValues ~= newValues) then
 		zc.msg_atr (ZT("tooltip configuration saved"));
@@ -190,26 +184,6 @@ end
 -----------------------------------------
 
 function Atr_tipsShiftDD_OnClick()
-	UIDropDownMenu_SetSelectedValue(this.owner, this.value);
-end
-
------------------------------------------
-
-function Atr_deDetailsDD_Initialize()
-
-	local info = UIDropDownMenu_CreateInfo();
-	
-	Atr_AddMenuPick (info, ZT("when SHIFT is held down"),	1, Atr_deDetailsDD_OnClick);
-	Atr_AddMenuPick (info, ZT("when CONTROL is held down"),	2, Atr_deDetailsDD_OnClick);
-	Atr_AddMenuPick (info, ZT("when ALT is held down"),		3, Atr_deDetailsDD_OnClick);
-	Atr_AddMenuPick (info, ZT("never"),						4, Atr_deDetailsDD_OnClick);
-	Atr_AddMenuPick (info, ZT("always"),					5, Atr_deDetailsDD_OnClick);
-
-end
-
------------------------------------------
-
-function Atr_deDetailsDD_OnClick()
 	UIDropDownMenu_SetSelectedValue(this.owner, this.value);
 end
 

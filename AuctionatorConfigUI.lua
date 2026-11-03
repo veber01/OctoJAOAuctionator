@@ -138,23 +138,15 @@ end
 do
 	local f = CreatePanel("Atr_TooltipsOptionsFrame", "Tooltips")
 
-	CreateLabel(f, "GameFontNormal", "When SHIFT is down show",		20, -181)
-	CreateLabel(f, "GameFontNormal", "Show disenchanting details",	20, -251)
+	CreateLabel(f, "GameFontNormal", "When SHIFT is down show",		20, -151)
 
 	CreateSingleOption(f, "ATR_tipsVendorOpt",		"Show vendor prices in tooltips",		-70)
 	CreateSingleOption(f, "ATR_tipsAuctionOpt",		"Show auction house prices in tooltips",	-95)
-	CreateSingleOption(f, "ATR_tipsDisenchantOpt",	"Show disenchant prices in tooltips",	-120)
 
-	local shift = CreateDropDown("Atr_tipsShiftDD", f, 50, -197)
+	local shift = CreateDropDown("Atr_tipsShiftDD", f, 50, -167)
 	UIDropDownMenu_Initialize(shift, Atr_tipsShiftDD_Initialize)
 	UIDropDownMenu_SetSelectedValue(shift, 1)
 	UIDropDownMenu_JustifyText("LEFT", shift)
-
-	local de = CreateDropDown("Atr_deDetailsDD", f, 50, -267)
-	UIDropDownMenu_Initialize(de, Atr_deDetailsDD_Initialize)
-	UIDropDownMenu_SetWidth(175, de)
-	UIDropDownMenu_JustifyText("LEFT", de)
-	UIDropDownMenu_SetSelectedValue(de, 1)
 end
 
 -----------------------------------------

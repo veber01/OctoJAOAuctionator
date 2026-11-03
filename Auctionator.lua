@@ -20,9 +20,7 @@ AUCTIONATOR_SHOW_TIPS		= 1;
 AUCTIONATOR_DEF_DURATION	= "N";
 AUCTIONATOR_V_TIPS			= 1;
 AUCTIONATOR_A_TIPS			= 1;
-AUCTIONATOR_D_TIPS			= 1;
 AUCTIONATOR_SHIFT_TIPS		= 1;
-AUCTIONATOR_DE_DETAILS_TIPS	= 4;
 AUCTIONATOR_DEFTAB			= 1;
 
 AUCTIONATOR_OPEN_FIRST		= 0;
@@ -178,14 +176,6 @@ end
 
 -----------------------------------------
 
-function Atr_SetupHookFunctionsEarly ()
-
-	Atr_Hook_OnTooltipAddMoney ();
-
-end
-
------------------------------------------
-
 function Atr_SetupHookFunctions ()
 
 	auctionator_orig_AuctionFrameTab_OnClick = AuctionFrameTab_OnClick;
@@ -229,7 +219,8 @@ function Atr_GetItemLink (itemName)
 	local itemLink = gItemLinkCache[string.lower(itemName)];
 	
 	if (itemLink == nil) then
-		_, itemLink = Atr_GetItemInfo (itemName);
+		local unusedName;
+		unusedName, itemLink = Atr_GetItemInfo (itemName);
 		if (itemLink) then
 			Atr_AddToItemLinkCache (itemName, itemLink);
 		end
@@ -495,7 +486,6 @@ function Atr_OnLoad()
 	if (AUCTIONATOR_SHOW_TIPS == 0) then
 		AUCTIONATOR_V_TIPS = 0;
 		AUCTIONATOR_A_TIPS = 0;
-		AUCTIONATOR_D_TIPS = 0;
 		
 		AUCTIONATOR_SHOW_TIPS = 2;
 	end
@@ -508,7 +498,6 @@ function Atr_OnLoad()
 		AUCTIONATOR_OPEN_FIRST = 2;
 	end
 
-	Atr_SetupHookFunctionsEarly();
 
 	------------------
 
@@ -517,7 +506,6 @@ function Atr_OnLoad()
 
 	------------------
 
-	Atr_InitDETable();
 
 	if ( IsAddOnLoaded("Blizzard_AuctionUI") ) then
 		Atr_Init();
@@ -2133,10 +2121,7 @@ function Atr_OnUpdate(self, elapsed)
 		zc.CheckDeferredCall();
 	end
 
-	if (gAtr_dustCacheIndex > 0 and zc.periodic (self, "dust_lastUpdate", 0.1, elapsed)) then
-		Atr_GetNextDustIntoCache();
-	end
-	
+
 	if (zc.periodic (self, "idle_lastUpdate", 0.2, elapsed)) then
 		Atr_Idle (self, elapsed);
 	end
@@ -2261,6 +2246,15 @@ end
 
 ---------------------------------------------------------
 
+local function Atr_HideBargainCells()
+    if (Atr_BargainHeading) then Atr_BargainHeading:Hide(); end
+    local i;
+    for i = 1, 12 do
+        local cell = getglobal("AuctionatorEntry"..i.."_BargainPercent");
+        if (cell) then cell:Hide(); end
+    end
+end
+
 function Atr_UpdateUI ()
 
 	if (gCurrentPane == nil) then
@@ -2283,7 +2277,8 @@ function Atr_UpdateUI ()
 			Atr_ShowHistory();
 		else
 			PanelTemplates_SetTab(Atr_ListTabs, 3);
-			Atr_ShowHints();
+            Atr_HideBargainCells();
+            Atr_ShowHints();
 		end
 		
 		if (gCurrentPane:IsScanEmpty()) then
@@ -2334,6 +2329,9 @@ function Atr_UpdateUI ()
 	
 	if (Atr_IsTabSelected(SELL_TAB)) then
 		Atr_UpdateUI_SellPane (needsUpdate);
+	end
+	if (Atr_UpdateSellMarketInfo) then
+		Atr_UpdateSellMarketInfo(Atr_IsTabSelected(SELL_TAB));
 	end
 end
 
@@ -2683,7 +2681,8 @@ function Atr_RedisplayAuctions ()
 	elseif Atr_ShowingHistory() then
 		Atr_ShowHistory();
 	else
-		Atr_ShowHints();
+        Atr_HideBargainCells();
+        Atr_ShowHints();
 	end
 end
 
@@ -2793,7 +2792,32 @@ end
 
 -----------------------------------------
 
+local function Atr_UpdateBargainCell(line, itemName, data)
+    local text = getglobal("AuctionatorEntry"..line.."_BargainPercent");
+    if (not text) then return; end
+    text:SetText("");
+    if (not data or not itemName or data.buyoutPrice == nil or data.buyoutPrice <= 0
+        or not data.stackSize or data.stackSize <= 0 or not AtrMarket) then
+        text:Hide();
+        return;
+    end
+    local discount = AtrMarket.BargainPercent(itemName, data.buyoutPrice/data.stackSize, 30);
+    if (not discount) then text:Hide(); return; end
+    if (discount > 0) then
+        text:SetTextColor(.3, 1, .3);
+        text:SetText("+"..discount.."%");
+    elseif (discount < 0) then
+        text:SetTextColor(1, .45, .3);
+        text:SetText(discount.."%");
+    else
+        text:SetTextColor(.85, .85, .85);
+        text:SetText("0%");
+    end
+    text:Show();
+end
+
 function Atr_ShowSearchSummary()
+	if (Atr_BargainHeading) then Atr_BargainHeading:Show(); end
 
 	Atr_Col1_Heading_Button:SetText (ZT("Lowest Price"));
 	Atr_Col1_Heading:Hide();
@@ -2836,6 +2860,7 @@ function Atr_ShowSearchSummary()
 		if (dataOffset > numrows or not scn) then
 
 			lineEntry:Hide();
+			Atr_UpdateBargainCell(line, nil, nil);
 
 		else
 			local data = scn.absoluteBest;
@@ -2872,6 +2897,8 @@ function Atr_ShowSearchSummary()
 			lineEntry_text:SetText (icon.."  "..scn.itemName);
 			lineEntry_stack:SetText (scn:GetNumAvailable().." "..ZT("available"));
 			
+			Atr_UpdateBargainCell(line, scn.itemName, data);
+
 			if (data == nil or data.buyoutPrice == 0) then
 				lineEntry_item:Hide();
 				lineEntry_itemtext:Show();
@@ -2897,6 +2924,7 @@ end
 -----------------------------------------
 
 function Atr_ShowCurrentAuctions()
+	if (Atr_BargainHeading) then Atr_BargainHeading:Show(); end
 
 	Atr_Col1_Heading:Hide();
 	Atr_Col3_Heading:Hide();
@@ -2947,6 +2975,7 @@ function Atr_ShowCurrentAuctions()
 		if (dataOffset > numrows or not gCurrentPane.activeScan.sortedData[dataOffset]) then
 
 			lineEntry:Hide();
+			Atr_UpdateBargainCell(line, nil, nil);
 
 		else
 			local data = gCurrentPane.activeScan.sortedData[dataOffset];
@@ -2967,6 +2996,8 @@ function Atr_ShowCurrentAuctions()
 
 			Atr_SetMFcolor (lineEntry_item_tag);
 			
+			Atr_UpdateBargainCell(line, gCurrentPane.activeScan.itemName, data);
+
 			local entrytext = "";
 
 			if (data.type == "n") then
@@ -3020,6 +3051,7 @@ end
 -----------------------------------------
 
 function Atr_ShowHistory ()
+    Atr_HideBargainCells();
 
 	if (gCurrentPane.sortedHist == nil) then
 		Atr_Process_Historydata ();

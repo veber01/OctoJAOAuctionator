@@ -63,7 +63,7 @@ do
 end
 
 function Atr_GetVersion()
-	return "1.1.5"
+	return "1.1.7"
 end
 
 ----------------------------------------------------------------------
@@ -536,7 +536,7 @@ function Atr_ShowRowStackMoney(row, money)
 	end
 	if not mf then
 		mf = Atr_CreateMoneyFrame(row, "STATIC")
-		mf:SetPoint("RIGHT", row, "LEFT", 573, 0)
+		mf:SetPoint("RIGHT", row, "LEFT", 495, 0)
 		row.atrStackMoney = mf
 	end
 	Atr_SetMoney(mf, money)
