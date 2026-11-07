@@ -127,6 +127,20 @@ end
 
 -----------------------------------------
 
+function Atr_MetadataCompactTexture(texture)
+    if (type(texture) ~= "string" or texture == "") then return nil; end
+    local _, _, icon = string.find(texture, "^[Ii]nterface\\[Ii]cons\\([^\\]+)$");
+    return icon or texture;
+end
+
+function Atr_MetadataExpandTexture(texture)
+    if (type(texture) ~= "string" or texture == "") then return nil; end
+    if (not string.find(texture, "[\\/]")) then
+        return "Interface\\Icons\\"..texture;
+    end
+    return texture;
+end
+
 local function Atr_SaveScannedItemMetadata (name, texture, itemLink, quality)
     if (type(name) ~= "string" or name == "") then return; end
 
@@ -141,11 +155,11 @@ local function Atr_SaveScannedItemMetadata (name, texture, itemLink, quality)
     end
 
     if (type(quality) == "number" and quality >= 0 and quality <= 6) then
-        metadata.quality = quality;
+        metadata.q = quality;
     end
 
     if (type(texture) == "string" and texture ~= "") then
-        metadata.texture = texture;
+        metadata.t = Atr_MetadataCompactTexture(texture);
     end
 
     local itemId;
@@ -163,12 +177,12 @@ local function Atr_SaveScannedItemMetadata (name, texture, itemLink, quality)
 
     metadata.id = itemId;
 
-    if (Atr_GetItemInfo and (not metadata.category or not metadata.subcategory or not metadata.texture)) then
+    if (Atr_GetItemInfo and (not metadata.c or not metadata.s or not metadata.t)) then
         local _, _, _, _, _, category, subcategory, _, _, itemTexture = Atr_GetItemInfo (itemId);
-        if (category and category ~= "") then metadata.category = category; end
-        if (subcategory and subcategory ~= "") then metadata.subcategory = subcategory; end
-        if (not metadata.texture and type(itemTexture) == "string" and itemTexture ~= "") then
-            metadata.texture = itemTexture;
+        if (category and category ~= "") then metadata.c = category; end
+        if (subcategory and subcategory ~= "") then metadata.s = subcategory; end
+        if (not metadata.t and type(itemTexture) == "string" and itemTexture ~= "") then
+            metadata.t = Atr_MetadataCompactTexture(itemTexture);
         end
     end
 end
@@ -585,9 +599,9 @@ function AtrSearch:Finish()
 					AUCTIONATOR_SEARCH_METADATA[scn.itemName].id = tonumber (itemId);
                     local _, _, _, _, _, itemType, itemSubType, _, _, texture = Atr_GetItemInfo (tonumber(itemId));
                     local metadata = AUCTIONATOR_SEARCH_METADATA[scn.itemName];
-                    if (itemType) then metadata.category = itemType; end
-                    if (itemSubType) then metadata.subcategory = itemSubType; end
-                    if (texture) then metadata.texture = texture; end
+                    if (itemType) then metadata.c = itemType; end
+                    if (itemSubType) then metadata.s = itemSubType; end
+                    if (texture) then metadata.t = Atr_MetadataCompactTexture(texture); end
 				end
 			end
 		end
@@ -1177,9 +1191,9 @@ function Atr_FullScanFinish()
 					AUCTIONATOR_SEARCH_METADATA[name].id = tonumber (itemId);
                     local _, _, _, _, _, itemType, itemSubType, _, _, texture = Atr_GetItemInfo (tonumber(itemId));
                     local metadata = AUCTIONATOR_SEARCH_METADATA[name];
-                    if (itemType) then metadata.category = itemType; end
-                    if (itemSubType) then metadata.subcategory = itemSubType; end
-                    if (texture) then metadata.texture = texture; end
+                    if (itemType) then metadata.c = itemType; end
+                    if (itemSubType) then metadata.s = itemSubType; end
+                    if (texture) then metadata.t = Atr_MetadataCompactTexture(texture); end
 				end
 			end
 		end

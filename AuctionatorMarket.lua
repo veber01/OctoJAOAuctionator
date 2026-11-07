@@ -11,6 +11,78 @@ local function DB()
     return d;
 end
 
+local function CompactSavedData()
+    local metadata = AUCTIONATOR_SEARCH_METADATA;
+    if (type(metadata) == "table") then
+        local _, meta;
+        for _, meta in pairs(metadata) do
+            if (type(meta) == "table") then
+                if (meta.category ~= nil) then meta.c = meta.c or meta.category; meta.category = nil; end
+                if (meta.subcategory ~= nil) then meta.s = meta.s or meta.subcategory; meta.subcategory = nil; end
+                if (meta.texture ~= nil) then meta.t = meta.t or meta.texture; meta.texture = nil; end
+                if (meta.quality ~= nil) then meta.q = meta.q or meta.quality; meta.quality = nil; end
+                if (type(meta.t) == "string" and Atr_MetadataCompactTexture) then
+                    meta.t = Atr_MetadataCompactTexture(meta.t);
+                end
+            end
+        end
+    end
+    local history = DB().history;
+    local cutoff = tonumber(date("%Y%m%d", time() - MAX_DAYS * 86400));
+    local name, series;
+    for name, series in pairs(history) do
+        if (type(series) ~= "table") then
+            history[name] = nil;
+        else
+            local byDate = {};
+            local i, v, dayNumber, total, count, low, last;
+            for i = 1, table.getn(series) do
+                v = series[i];
+                if (type(v) == "table") then
+                    if (type(v[1]) == "number") then
+                        dayNumber, total, count, low, last = v[1], v[2], v[3], v[4], v[5];
+                    else
+                        dayNumber = type(v.day) == "string" and tonumber(string.gsub(v.day, "%-", "")) or nil;
+                        total, count, low, last = v.sum, v.n, v.low, v.last;
+                    end
+                    if (dayNumber and dayNumber >= cutoff and type(count) == "number" and count > 0
+                        and type(total) == "number" and type(low) == "number" and type(last) == "number") then
+                        local prior = byDate[dayNumber];
+                        if (prior) then
+                            prior[2] = prior[2] + total;
+                            prior[3] = prior[3] + count;
+                            prior[4] = math.min(prior[4], low);
+                            -- Keep last observation from later entries.
+                            prior[5] = last;
+                        else
+                            byDate[dayNumber] = {dayNumber, total, count, low, last};
+                        end
+                    end
+                end
+            end
+            local packed, days = {}, {};
+            for dayNumber in pairs(byDate) do table.insert(days, dayNumber); end
+            table.sort(days);
+            local first = math.max(1, table.getn(days) - MAX_DAYS + 1);
+            for i = first, table.getn(days) do table.insert(packed, byDate[days[i]]); end
+            if (table.getn(packed) > 0) then history[name] = packed; else history[name] = nil; end
+        end
+    end
+    -- The UI already ignores deals more than 48 hours old; remove them from disk too.
+    local deals = DB().deals;
+    for name, series in pairs(deals) do
+        if (type(series) ~= "table" or type(series.t) ~= "number" or
+            time() - series.t > 172800) then deals[name] = nil; end
+    end
+end
+
+local migration = CreateFrame("Frame");
+migration:RegisterEvent("PLAYER_LOGIN");
+migration:SetScript("OnEvent", function()
+    CompactSavedData();
+    migration:UnregisterEvent("PLAYER_LOGIN");
+end);
+
 local function ValidPrice(p)
     return type(p) == "number" and p > 0 and p < 100000000000;
 end
@@ -104,12 +176,17 @@ function M.History(name, days)
     local byDay = SharedHistory(name, cutoffDay);
     local series = DB().history[name] or {};
     local i, v;
+    local cutoffNumber = tonumber(date("%Y%m%d", cutoff));
     for i = 1, table.getn(series) do
         v = series[i];
-        if (type(v) == "table" and (v.t or 0) >= cutoff and (v.n or 0) > 0
-            and ValidPrice(v.sum / v.n)) then
-            byDay[v.day] = {day=v.day, average=math.floor(v.sum/v.n+0.5),
-                low=v.low, last=v.last, samples=v.n, source="Local"};
+        -- Compact entry: { YYYYMMDD, sum, count, lowest, last }.
+        if (type(v) == "table" and type(v[1]) == "number"
+            and v[1] >= cutoffNumber and type(v[3]) == "number" and v[3] > 0
+            and ValidPrice(v[2] / v[3])) then
+            local dayNumber = tostring(v[1]);
+            local day = string.sub(dayNumber,1,4).."-"..string.sub(dayNumber,5,6).."-"..string.sub(dayNumber,7,8);
+            byDay[day] = {day=day, average=math.floor(v[2]/v[3]+0.5),
+                low=v[4], last=v[5], samples=v[3], source="Local"};
         end
     end
     local out = {};
@@ -153,19 +230,19 @@ function M.RecordScan(name, lowest, stamp, priorAuctionatorPrice)
 
     local series = d.history[name];
     if (type(series) ~= "table") then series = {}; d.history[name] = series; end
-    local key = Day(now);
+    local key = tonumber(date("%Y%m%d", now));
     local last = series[table.getn(series)];
-    if (last and last.day == key) then
-        last.sum = last.sum + lowest;
-        last.n = last.n + 1;
-        last.low = math.min(last.low or lowest, lowest);
-        last.t = now;
-        last.last = lowest;
+    if (last and last[1] == key) then
+        last[2] = last[2] + lowest;
+        last[3] = last[3] + 1;
+        last[4] = math.min(last[4] or lowest, lowest);
+        last[5] = lowest;
     else
-        table.insert(series, { day = key, t = now, sum = lowest, n = 1, low = lowest, last = lowest });
+        table.insert(series, {key, lowest, 1, lowest, lowest});
     end
-    local cutoff = now - MAX_DAYS * 86400;
-    while (table.getn(series) > 0 and (table.getn(series) > MAX_DAYS or (series[1].t or 0) < cutoff)) do
+    local cutoff = tonumber(date("%Y%m%d", now - MAX_DAYS * 86400));
+    while (table.getn(series) > 0 and
+        (table.getn(series) > MAX_DAYS or (series[1][1] or 0) < cutoff)) do
         table.remove(series, 1);
     end
 end

@@ -135,10 +135,10 @@ local function LoadItemMetadata (e)
     local meta = AUCTIONATOR_SEARCH_METADATA and AUCTIONATOR_SEARCH_METADATA[e.name];
     if (type(meta) == "table") then
         e.id = e.id or tonumber (meta.id);
-        e.category = meta.category;
-        e.subcategory = meta.subcategory;
-        e.texture = meta.texture;
-        e.quality = tonumber (meta.quality);
+        e.category = meta.c;
+        e.subcategory = meta.s;
+        e.texture = Atr_MetadataExpandTexture(meta.t);
+        e.quality = tonumber (meta.q);
     end
     if (e.id and Atr_GetItemInfo) then
         local _, _, quality, _, _, itemType, itemSubType, _, _, texture = Atr_GetItemInfo (e.id);
@@ -151,10 +151,10 @@ local function LoadItemMetadata (e)
             if (type(AUCTIONATOR_SEARCH_METADATA[e.name]) ~= "table") then AUCTIONATOR_SEARCH_METADATA[e.name] = {}; end
             meta = AUCTIONATOR_SEARCH_METADATA[e.name];
             meta.id = e.id;
-            meta.category = e.category;
-            meta.subcategory = e.subcategory;
-            meta.texture = e.texture;
-            meta.quality = e.quality;
+            meta.c = e.category;
+            meta.s = e.subcategory;
+            meta.t = Atr_MetadataCompactTexture(e.texture);
+            meta.q = e.quality;
         end
     end
 end
